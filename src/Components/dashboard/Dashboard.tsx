@@ -63,7 +63,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           color: 'blue',
           icon: FileCheck,
           border: "border-blue-500",
-      iconBg: "bg-blue-100",
+      iconBg: "bg-blue-200",
       iconColor: "text-blue-600",
       gif:users
         },
@@ -143,7 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const getColorClasses = (color: string) => {
     const map: Record<string, string> = {
-      blue: 'border-blue-500 text-blue-600 bg-blue-50',
+      blue: 'border-blue-500 text-blue-600 bg-blue-50 bg-gradient-to-br from-blue-400 via-indigo-200 to-purple-200' ,
       yellow: 'border-yellow-500 text-yellow-600 bg-yellow-50',
       green: 'border-green-500 text-green-600 bg-green-50',
       purple: 'border-purple-500 text-purple-600 bg-purple-50',
@@ -197,7 +197,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="mt-12">
+      {/* <div className="mt-12">
         <h3 className="text-xl font-semibold text-gray-800 mb-2">
           Welcome back!
         </h3>
@@ -206,7 +206,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             ? 'Manage projects, estimates, and invoices from the sidebar.'
             : 'View your projects, estimates, and invoices.'}
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };
