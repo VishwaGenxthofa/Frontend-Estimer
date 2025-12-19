@@ -144,11 +144,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   const getColorClasses = (color: string) => {
     const map: Record<string, string> = {
       blue: 'border-blue-500 text-blue-600 bg-blue-50 bg-gradient-to-br from-blue-400 via-indigo-200 to-purple-200' ,
-      yellow: 'border-yellow-500 text-yellow-600 bg-yellow-50',
-      green: 'border-green-500 text-green-600 bg-green-50',
-      purple: 'border-purple-500 text-purple-600 bg-purple-50',
-      pink: 'border-pink-500 text-pink-600 bg-pink-50',
-      red: 'border-red-500 text-red-600 bg-red-50',
+      yellow: 'border-yellow-500 text-yellow-600 bg-yellow-50  bg-gradient-to-br from-yellow-400 via-indigo-200 to-purple-200',
+      green: 'border-green-500 text-green-600 bg-green-50 bg-gradient-to-br from-green-400 via-indigo-200 to-purple-200',
+      purple: 'border-purple-500 text-purple-600 bg-purple-50 bg-gradient-to-br from-purple-400 via-indigo-200 to-purple-200',
+      pink: 'border-pink-500 text-pink-600 bg-pink-50 bg-gradient-to-br from-pink-400 via-indigo-200 to-purple-200',
+      red: 'border-red-500 text-red-600 bg-red-50 bg-gradient-to-br from-red-400 via-indigo-200 to-purple-200',
     };
     return map[color];
   };
