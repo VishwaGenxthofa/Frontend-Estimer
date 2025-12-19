@@ -1,0 +1,101 @@
+// src/components/clients/AddClientModal.tsx
+import React, { useState } from 'react';
+import Modal from '../common/Modal';
+import type { Client } from '../../types/Index';
+
+interface AddClientModalProps {
+  onClose: () => void;
+  clients: Client[];
+  setClients: React.Dispatch<React.SetStateAction<Client[]>>;
+}
+
+const AddClientModal: React.FC<AddClientModalProps> = ({ onClose, clients, setClients }) => {
+  const [form, setForm] = useState({
+    client_name: '',
+    email: '',
+    phone: '',
+    address: '',
+  });
+
+  const handleSubmit = () => {
+    if (!form.client_name || !form.email) {
+      alert('Client Name and Email are required!');
+      return;
+    }
+
+    setClients([
+      ...clients,
+      {
+        client_id: Math.max(...clients.map(c => c.client_id), 0) + 1,
+        ...form,
+      },
+    ]);
+
+    onClose();
+  };
+
+  return (
+    <Modal onClose={onClose} title="Add New Client">
+      <div className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Client Name *</label>
+          <input
+            placeholder="e.g., Acme Corporation"
+            value={form.client_name}
+            onChange={(e) => setForm({ ...form, client_name: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+          <input
+            type="email"
+            placeholder="client@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input
+            placeholder="+91 98765 43210"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <textarea
+            rows={3}
+            placeholder="Full address..."
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={handleSubmit}
+            className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium transition"
+          >
+            Add Client
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export default AddClientModal;
