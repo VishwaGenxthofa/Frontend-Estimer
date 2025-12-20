@@ -13,7 +13,7 @@ import users from '../../assets/social-media.gif'
 import briefcase from '../../assets/briefcase.gif'
 import file from '../../assets/document.gif'
 import receipt from '../../assets/fee-receipt.gif'
-import indianrupee from '../../assets/blapaid.gif'
+import indianrupee from '../../assets/balpaid.gif'
 import paidinvoices from '../../assets/paid-invoices.gif'
 interface DashboardProps {
   isAdmin: boolean;
@@ -102,7 +102,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         {
           label: 'My Projects',
           value: totalProjects,
-          color: 'blue',
+          color: 'green',
           icon: FolderKanban,
           border: "border-green-500",
          iconBg: "bg-green-100",
@@ -143,12 +143,12 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const getColorClasses = (color: string) => {
     const map: Record<string, string> = {
-      blue: 'border-blue-500 text-blue-600 bg-blue-50 bg-gradient-to-br from-blue-400 via-indigo-200 to-purple-200' ,
-      yellow: 'border-yellow-500 text-yellow-600 bg-yellow-50  bg-gradient-to-br from-yellow-400 via-indigo-200 to-purple-200',
-      green: 'border-green-500 text-green-600 bg-green-50 bg-gradient-to-br from-green-400 via-indigo-200 to-purple-200',
-      purple: 'border-purple-500 text-purple-600 bg-purple-50 bg-gradient-to-br from-purple-400 via-indigo-200 to-purple-200',
-      pink: 'border-pink-500 text-pink-600 bg-pink-50 bg-gradient-to-br from-pink-400 via-indigo-200 to-purple-200',
-      red: 'border-red-500 text-red-600 bg-red-50 bg-gradient-to-br from-red-400 via-indigo-200 to-purple-200',
+      blue: 'border-blue-500 text-blue-600 bg-blue-50 bg-gradient-to-br from-blue-400  to-blue-300' ,
+      yellow: 'border-yellow-500 text-yellow-600 bg-yellow-50  bg-gradient-to-br from-yellow-400  to-yellow-300',
+      green: 'border-green-500 text-green-600 bg-green-50 bg-gradient-to-br from-green-400  to-green-300',
+      purple: 'border-purple-500 text-purple-600 bg-purple-50 bg-gradient-to-br from-purple-400  to-purple-300',
+      pink: 'border-pink-500 text-pink-600 bg-pink-50 bg-gradient-to-br from-pink-400  to-pink-300',
+      red: 'border-red-500 text-red-600 bg-red-50 bg-gradient-to-br from-red-400  to-red-300',
     };
     return map[color];
   };
@@ -179,15 +179,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         />
               {/* Icon */}
               <div
-                className={`w-12 h-12 flex items-center justify-center rounded-xl ${stat.iconBg}`}
+                className={`w-12 h-12 flex items-center justify-center m-2  rounded-xl ${stat.iconBg}`}
               >
                 <Icon className={`w-6 h-6 ${stat.iconColor}`} />
               </div>
 
               {/* Content */}
-              <p className="text-sm font-medium mt-3 uppercase tracking-wide text-gray-600">
+              <h2 className="text-sm font-medium m-0 uppercase tracking-wide text-black">
                 {stat.label}
-              </p>
+              </h2>
               <p className="text-3xl font-bold  text-gray-800">
                 {stat.value}
               </p>

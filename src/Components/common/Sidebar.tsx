@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isAdmin }) =
   const tabs = isAdmin ? adminTabs : clientTabs;
 
   return (
-    <aside className="w-16 md:w-64 bg-gradient-to-br from-blue-400 via-emerald-300 to-teal-200 border-r border-gray-200 min-h-screen">
+    <aside className="w-16 md:w-64 bg-gradient-to-r from-slate-100 to-slate-200 border-r border-gray-200 min-h-screen">
   <nav className="p-3 md:p-6 space-y-2">
     {tabs.map((tab) => {
       const Icon = tab.icon;
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isAdmin }) =
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`w-full flex items-center md:justify-start justify-center gap-4 px-3 md:px-5 py-3 rounded-xl transition-all ${
+          className={`w-full flex items-center cursor-pointer  md:justify-start justify-center gap-4 px-3 md:px-5 py-3 rounded-xl transition-all ${
             isActive
               ? 'bg-blue-50 text-blue-600 font-semibold shadow-sm'
               : 'text-gray-700 hover:bg-gray-100'

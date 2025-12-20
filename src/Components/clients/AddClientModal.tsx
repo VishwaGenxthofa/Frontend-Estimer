@@ -2,37 +2,43 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import type { Client } from '../../types/Index';
+import { useDispatch } from 'react-redux';
+import { createClient } from '../../redux/slices/clientSlice';
+import type { AppDispatch } from '../../redux/slices/store';
+// interface AddClientModalProps {
+//   onClose: () => void;
+//   clients: Client[];
+//   setClients: React.Dispatch<React.SetStateAction<Client[]>>;
+// }
 
-interface AddClientModalProps {
-  onClose: () => void;
-  clients: Client[];
-  setClients: React.Dispatch<React.SetStateAction<Client[]>>;
-}
-
-const AddClientModal: React.FC<AddClientModalProps> = ({ onClose, clients, setClients }) => {
+const AddClientModal: React.FC<{onClose:()=>void }> = ({ onClose }) => {
+  const dispatch=useDispatch<AppDispatch>();
   const [form, setForm] = useState({
-    client_name: '',
+    clientName: '',
     email: '',
     phone: '',
     address: '',
   });
 
-  const handleSubmit = () => {
-    if (!form.client_name || !form.email) {
-      alert('Client Name and Email are required!');
-      return;
-    }
+  const handleSubmit = async () => {
+  // Validation
+  if (!form.clientName|| !form.email) {
+    alert('Client Name and Email are required!');
+    return;
+  }
 
-    setClients([
-      ...clients,
-      {
-        client_id: Math.max(...clients.map(c => c.client_id), 0) + 1,
-        ...form,
-      },
-    ]);
+  try {
+    // Dispatch Redux asyncThunk
+    await dispatch(createClient(form)).unwrap();
 
+    // Close modal after success
     onClose();
-  };
+  } catch (err) {
+    console.error(err);
+    alert('Failed to add client');
+  }
+};
+
 
   return (
     <Modal onClose={onClose} title="Add New Client">
@@ -41,8 +47,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ onClose, clients, setCl
           <label className="block text-sm font-medium text-gray-700 mb-1">Client Name *</label>
           <input
             placeholder="e.g., Acme Corporation"
-            value={form.client_name}
-            onChange={(e) => setForm({ ...form, client_name: e.target.value })}
+            value={form.clientName}
+            onChange={(e) => setForm({ ...form, clientName: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

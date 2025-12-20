@@ -49,7 +49,7 @@ const App: React.FC = () => {
           ) : (
             <div className="h-screen bg-gray-50 overflow-hidden">
               {/* Header */}
-              <div className="fixed top-0 left-0 right-0 z-50">
+              <div className="fixed top- left-0 right-0 z-50">
                 <Header user={user} onLogout={() => setUser(null)} />
               </div>
 

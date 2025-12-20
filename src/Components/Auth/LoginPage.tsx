@@ -10,14 +10,9 @@ const  LoginPage:React.FC<LoginScreenProps>=({onLogin})=> {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
  
-  // const handleSignIn = () => {
-  //   if(email == "vishwa@gmail.com" && password == "vishwa@123"){
-  //       navigator('dashboard')
-  //   }else{
-  //       alert("invalid  email & password ")
-  //   }
-  //   console.log('sign sucessfully ',  email, password,);
-  // };
+  const handleSignIn = () => {
+      onLogin(email, password);
+  };
 
   // const handleGoogleSignIn = () => {
   //   console.log('Google sign in clicked');

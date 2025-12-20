@@ -1,19 +1,17 @@
 // src/types/index.ts
 export interface User {
   email: string;
-  password:string | number;
   role: 'Admin' | 'Client';
-  id: number;
-  name: string;
-
+ 
 }
 
 export interface Client {
-  client_id: number;
-  client_name: string;
+  clientId: number;
+  clientName: string;
   email: string;
   phone: string;
   address: string;
+  isActive:string;
 }
 
 export interface Project {
