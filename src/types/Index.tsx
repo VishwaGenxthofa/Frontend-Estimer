@@ -11,7 +11,7 @@ export interface Client {
   email: string;
   phone: string;
   address: string;
-  isActive:string;
+  isActive:boolean;
 }
 
 export interface Project {
