@@ -21,7 +21,8 @@ interface DashboardProps {
   estimates: Estimate[];
   invoices: Invoice[];
 }
-
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../redux/slices/store';
 const Dashboard: React.FC<DashboardProps> = ({
   isAdmin,
   projects,
@@ -30,11 +31,13 @@ const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const totalProjects = projects.length;
   const pendingEstimates = estimates.filter(e => e.status === 'Pending').length;
-  const approvedEstimates = estimates.filter(e => e.status === 'Approved').length;
+  // const approvedEstimates = estimates.filter(e => e.status === 'Approved').length;
   const totalInvoices = invoices.length;
   const paidInvoices = invoices.filter(i => i.status === 'Paid').length;
   const unpaidBalance = invoices.reduce((sum, i) => sum + i.balance, 0);
-
+const clientCount = useSelector(
+    (state: RootState) => state.clients.clients.length
+  );
   const stats = isAdmin
     ? [
         {
@@ -58,8 +61,8 @@ const Dashboard: React.FC<DashboardProps> = ({
           gif:file
         },
         {
-          label: 'Approved Estimates',
-          value: approvedEstimates,
+          label: 'Total Clients',
+          value: clientCount,
           color: 'blue',
           icon: FileCheck,
           border: "border-blue-500",

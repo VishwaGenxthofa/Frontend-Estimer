@@ -33,7 +33,7 @@ const ClientsTab: React.FC = () => {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
 
   useEffect(() => {
-    dispatch(fetchClients());
+    dispatch(fetchClients({ page: 2, pageSize: 20 }));
   }, [dispatch]);
 
   // ================= DELETE =================
@@ -212,7 +212,7 @@ const ClientsTab: React.FC = () => {
         dataSource={clients}
         rowKey="clientId"
         loading={loading}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize:10, }}
         scroll={{ x: 700 }}
         className="shadow"
       />
@@ -222,7 +222,7 @@ const ClientsTab: React.FC = () => {
         <AddClientModal
           onClose={() => setShowModal(false)}
           editingClient={editingClient}
-          refreshClients={() => dispatch(fetchClients())}
+          refreshClients={() => dispatch(fetchClients({ page: 2, pageSize: 20 }))}
         />
       )}
     </div>

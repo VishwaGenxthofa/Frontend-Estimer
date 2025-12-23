@@ -7,8 +7,6 @@ import {
   clearClientsStorage,
 } from '../../utils/clientStorage';
 
-/* -------------------- STATE -------------------- */
-
 interface ClientState {
   clients: Client[];
   loading: boolean;
@@ -21,117 +19,75 @@ const initialState: ClientState = {
   error: null,
 };
 
-/* -------------------- FETCH -------------------- */
-
-export const fetchClients = createAsyncThunk(
-  'clients/fetchClients',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get('/Client');
-
-      // ✅ Normalize backend response (IMPORTANT)
-      return response.data.data.map((c: any): Client => ({
-        clientId: c.clientId ?? c.clientId,
-        clientName: c.clientName ?? c.client_name ?? '',
-        email: c.email ?? '',
-        phone: c.phone ?? '',
-        address: c.address ?? '',
-        isActive: Boolean(c.isActive),
-      }));
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+// ===================== FETCH CLIENTS =====================
+export const fetchClients = createAsyncThunk<
+  Client[],
+  { page?: number; pageSize?: number },
+  { rejectValue: string }
+>('clients/fetchClients', async ({ page = 1, pageSize = 10 }, { rejectWithValue }) => {
+  try {
+    const response = await api.get(`/Client?page=${page}&pageSize=${pageSize}`);
+    const clients = response.data?.data?.data ?? [];
+    return clients.map((c: any): Client => ({
+      clientId: c.clientId,
+      clientName: c.clientName ?? '',
+      email: c.email ?? '',
+      phone: c.phone ?? '',
+      address: c.address ?? '',
+      isActive: Boolean(c.isActive),
+    }));
+  } catch (err: any) {
+    return rejectWithValue(err.message || 'Failed to fetch clients');
   }
-);
+});
 
-/* -------------------- CREATE -------------------- */
-
-export const createClient = createAsyncThunk(
-  'clients/createClient',
-  async (client: Omit<Client, 'clientId'>, { rejectWithValue }) => {
-    try {
-      // ✅ Validation
-      if (!client.clientName.trim()) {
-        return rejectWithValue('Client name is required');
-      }
-
-      if (!client.email.trim()) {
-        return rejectWithValue('Email is required');
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(client.email)) {
-        return rejectWithValue('Invalid email format');
-      }
-
-      if (typeof client.isActive !== 'boolean') {
-        return rejectWithValue('Client status is required');
-      }
-
-      const response = await api.post('/Client', client);
-
-      return {
-        clientId: response.data.clientId ?? response.data.client_id,
-        clientName: response.data.clientName ?? '',
-        email: response.data.email ?? '',
-        phone: response.data.phone ?? '',
-        address: response.data.address ?? '',
-        isActive: Boolean(response.data.isActive),
-      } as Client;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+// ===================== CREATE CLIENT =====================
+export const createClient = createAsyncThunk<
+  void,
+  Omit<Client, 'clientId'>,
+  { rejectValue: string }
+>('clients/createClient', async (client, { rejectWithValue, dispatch }) => {
+  try {
+    await api.post('/Client', client);
+    dispatch(fetchClients({}));
+  } catch (err: any) {
+    // handle backend validation messages
+    const message = err.response?.data?.message || err.message || 'Failed to create client';
+    return rejectWithValue(message);
   }
-);
+});
 
-/* -------------------- UPDATE -------------------- */
-
-export const updateClient = createAsyncThunk(
-  'clients/updateClient',
-  async (
-    { id, data }: { id: number; data: Partial<Client> },
-    { rejectWithValue }
-  ) => {
-    try {
-      if (data.email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-          return rejectWithValue('Invalid email format');
-        }
-      }
-
-      const response = await api.put(`/Client/${id}`, data);
-
-      return {
-        clientId: response.data.clientId ?? response.data.client_id,
-        clientName: response.data.clientName ?? '',
-        email: response.data.email ?? '',
-        phone: response.data.phone ?? '',
-        address: response.data.address ?? '',
-        isActive: Boolean(response.data.isActive),
-      } as Client;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+// ===================== UPDATE CLIENT =====================
+export const updateClient = createAsyncThunk<
+  void,
+  { id: number; data: Partial<Client> },
+  { rejectValue: string }
+>('clients/updateClient', async ({ id, data }, { rejectWithValue, dispatch }) => {
+  try {
+    await api.put(`/Client/${id}`, data);
+    dispatch(fetchClients({}));
+  } catch (err: any) {
+    const message = err.response?.data?.message || err.message || 'Failed to update client';
+    return rejectWithValue(message);
   }
-);
+});
 
-/* -------------------- DELETE -------------------- */
-
-export const deleteClient = createAsyncThunk(
-  'clients/deleteClient',
-  async (id: number, { rejectWithValue }) => {
-    try {
-      await api.delete(`/Client/${id}`);
-      return id;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
+// ===================== DELETE CLIENT =====================
+export const deleteClient = createAsyncThunk<
+  void,
+  number,
+  { rejectValue: string }
+>('clients/deleteClient', async (id, { rejectWithValue, dispatch }) => {
+  try {
+    await api.delete(`/Client/${id}`);
+    dispatch(fetchClients({}));
+  } catch (err: any) {
+    const message = err.response?.data?.message || err.message || 'Failed to delete client';
+    return rejectWithValue(message);
   }
-);
+});
 
-/* -------------------- SLICE -------------------- */
-
+// ===================== SLICE =====================
 const clientSlice = createSlice({
   name: 'clients',
   initialState,
@@ -143,7 +99,7 @@ const clientSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // fetch
+      /* FETCH */
       .addCase(fetchClients.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -155,37 +111,21 @@ const clientSlice = createSlice({
       })
       .addCase(fetchClients.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? 'Fetch failed';
       })
 
-      // create
-      .addCase(createClient.fulfilled, (state, action) => {
-        state.clients.push(action.payload);
-        saveClientsToStorage(state.clients);
+      /* CREATE / UPDATE / DELETE (error handling only) */
+      .addCase(createClient.rejected, (state, action) => {
+        state.error = action.payload ?? 'Create failed';
       })
-
-      // update
-      .addCase(updateClient.fulfilled, (state, action) => {
-        const index = state.clients.findIndex(
-          (c) => c.clientId === action.payload.clientId
-        );
-        if (index !== -1) {
-          state.clients[index] = action.payload;
-          saveClientsToStorage(state.clients);
-        }
+      .addCase(updateClient.rejected, (state, action) => {
+        state.error = action.payload ?? 'Update failed';
       })
-
-      // delete
-      .addCase(deleteClient.fulfilled, (state, action) => {
-        state.clients = state.clients.filter(
-          (c) => c.clientId !== action.payload
-        );
-        saveClientsToStorage(state.clients);
+      .addCase(deleteClient.rejected, (state, action) => {
+        state.error = action.payload ?? 'Delete failed';
       });
   },
 });
-
-/* -------------------- EXPORTS -------------------- */
 
 export const { clearClients } = clientSlice.actions;
 export default clientSlice.reducer;
