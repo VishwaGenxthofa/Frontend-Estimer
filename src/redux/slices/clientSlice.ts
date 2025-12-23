@@ -106,7 +106,7 @@ const clientSlice = createSlice({
       })
       .addCase(fetchClients.fulfilled, (state, action) => {
         state.loading = false;
-        state.clients = action.payload;
+        state.clients = action.payload.sort((a, b) => a.clientId - b.clientId);;
         saveClientsToStorage(state.clients);
       })
       .addCase(fetchClients.rejected, (state, action) => {

@@ -162,7 +162,6 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ onClose, editingClient,
             />
           </div>
         </div>
-
         {/* ACTIONS */}
         <div className="flex gap-3 pt-4">
           <button onClick={handleSubmit} className="flex-1 bg-blue-600 text-white py-3 rounded-lg">
@@ -176,5 +175,4 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ onClose, editingClient,
     </Modal>
   );
 };
-
 export default AddClientModal;

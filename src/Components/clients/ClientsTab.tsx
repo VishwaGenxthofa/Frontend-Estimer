@@ -36,7 +36,7 @@ const ClientsTab: React.FC = () => {
     dispatch(fetchClients({ page: 2, pageSize: 20 }));
   }, [dispatch]);
 
-  // ================= DELETE =================
+  
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: 'Delete Client',
@@ -51,13 +51,13 @@ const ClientsTab: React.FC = () => {
     });
   };
 
-  // ================= EDIT =================
+  
   const handleEdit = (client: Client) => {
     setEditingClient(client);
     setShowModal(true);
   };
 
-  // ================= VIEW =================
+  
   const handleView = (client: Client) => {
     Modal.info({
       title: 'Client Details',
