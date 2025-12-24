@@ -6,14 +6,21 @@ import type { AppDispatch } from '../../redux/slices/store';
 import type { Client } from '../../types/Index';
 import { Switch } from 'antd';
 import toast from 'react-hot-toast';
-
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 /* ===================== TYPES ===================== */
 
 interface Errors {
-  clientName?: string;
+  companyName?: string;
+  companyContactPerson?:string;
   email?: string;
   phone?: string;
-  address?: string;
+  addressLine1?: string,
+  city?: string,
+  stateProvince?:string,
+  postalCode?: string,
+  country?: string,
+  phoneRaw?:string,
 }
 
 interface AddClientModalProps {
@@ -32,11 +39,17 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const [form, setForm] = useState({
-    clientName: '',
-    email: '',
-    phone: '',
-    address: '',
-    isActive: true,
+  companyName: '',
+  companyContactPerson:'',
+  email: '',
+  phone: '',
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  stateProvince:'',
+  postalCode: '',
+  country: '',
+  isActive: true,
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -46,10 +59,16 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
   useEffect(() => {
     if (editingClient) {
       setForm({
-        clientName: editingClient.clientName,
+        companyName: editingClient.companyName,
+        companyContactPerson:editingClient.companyContactPerson,
         email: editingClient.email,
         phone: editingClient.phone,
-        address: editingClient.address ?? '',
+        addressLine1:editingClient.addressLine1,
+        addressLine2:editingClient.addressLine2,
+        city:editingClient.city,
+        stateProvince: editingClient.stateProvince,
+       postalCode:editingClient.postalCode,
+        country:editingClient.country,
         isActive: editingClient.isActive,
       });
     }
@@ -60,27 +79,29 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
   const validate = (): boolean => {
     const newErrors: Errors = {};
 
-    if (!form.clientName.trim())
-      newErrors.clientName = 'Client Name is required';
-    else if (!/^[a-zA-Z]+(?: [a-zA-Z]+)*$/.test(form.clientName))
-      newErrors.clientName = 'Client Name should contain only letters ';
-    else if (form.clientName.trim().length < 3)
-      newErrors.clientName = 'Name must be at least 3 characters';
+    if (!form.companyName)
+      newErrors.companyName = 'companyName  Name is required';
+    else if (form.companyName.trim().length < 3)
+      newErrors.companyName = 'Name must be at least 3 characters';
 
     if (!form.email.trim())
       newErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       newErrors.email = 'Invalid email format';
 
-    if (!form.phone.trim())
-      newErrors.phone = 'Phone number is required';
-    else if (!/^[0-9]{10}$/.test(form.phone))
-      newErrors.phone = 'Phone number must be exactly 10 digits';
+    if (!form.phone) {
+  errors.phone = 'Phone number is required';
+} else if (form.phone.length < 7) {
+  errors.phone = 'Enter valid phone number';
+}
 
-    if (!form.address.trim())
-      newErrors.address = 'Address is required';
-    else if (form.address.length < 5 || form.address.length > 250)
-      newErrors.address = 'Address must be 5–250 characters';
+    if (!form.addressLine1.trim())
+      newErrors.addressLine1 = 'Address is required';
+    if (!form.city) errors.city = 'City is required';
+if (!form.stateProvince) errors.stateProvince = 'State is required';
+if (!form.postalCode) errors.postalCode = 'Postal code is required';
+if (!form.country) errors.country = 'Country is required';
+ if (!form.companyContactPerson)newErrors.companyContactPerson='companyContactPerson is required'
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -136,21 +157,40 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         {/* CLIENT NAME */}
         <div>
           <label className="block text-sm font-medium mb-1">
-            Client Name <span className="text-red-500">*</span>
+            companyName <span className="text-red-500">*</span>
           </label>
           <input
             name="clientName"
-            value={form.clientName}
+            value={form.companyName}
             onChange={(e) => {
-              setForm({ ...form, clientName: e.target.value });
-              setErrors({ ...errors, clientName: '' });
+              setForm({ ...form, companyName: e.target.value });
+              setErrors({ ...errors, companyName: '' });
             }}
             className={`w-full px-4 py-2 rounded-lg border ${
-              errors.clientName ? 'border-red-500' : 'border-gray-300'
+              errors.companyName ? 'border-red-500' : 'border-gray-300'
             }`}
           />
-          {errors.clientName && (
-            <p className="text-sm text-red-500 mt-1">{errors.clientName}</p>
+          {errors.companyName && (
+            <p className="text-sm text-red-500 mt-1">{errors.companyName}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            companyContactPerson <span className="text-red-500">*</span>
+          </label>
+          <input
+            name="clientName"
+            value={form.companyContactPerson}
+            onChange={(e) => {
+              setForm({ ...form, companyContactPerson: e.target.value });
+              setErrors({ ...errors, companyContactPerson: '' });
+            }}
+            className={`w-full px-4 py-2 rounded-lg border ${
+              errors.companyContactPerson ? 'border-red-500' : 'border-gray-300'
+            }`}
+          />
+          {errors.companyName && (
+            <p className="text-sm text-red-500 mt-1">{errors.companyContactPerson}</p>
           )}
         </div>
 
@@ -175,43 +215,176 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         </div>
 
         {/* PHONE */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Phone <span className="text-red-500">*</span>
-          </label>
-          <input
-            value={form.phone}
-            onChange={(e) => {
-              setForm({ ...form, phone: e.target.value });
-              setErrors({ ...errors, phone: '' });
-            }}
-            className={`w-full px-4 py-2 rounded-lg border ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.phone && (
-            <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
-          )}
-        </div>
+            <div>
+      <label className="block text-sm font-medium mb-1">
+        Phone <span className="text-red-500">*</span>
+      </label>
 
-        {/* ADDRESS */}
+            <PhoneInput
+          country="in"
+          value={form.phone}
+          onChange={(value, country) => {
+            const digits = value.replace(/\D/g, '');
+
+            let cleanPhone = digits;
+
+            // remove India country code
+            if (country?.countryCode === 'in' && digits.startsWith('91')) {
+              cleanPhone = digits.slice(2);
+            }
+
+            setForm({
+              ...form,
+              phone: cleanPhone, // ✅ ONLY 10 digits
+            });
+
+            setErrors({ ...errors, phone: '' });
+          }}
+          enableSearch
+          inputProps={{ required: true }}
+          inputClass="!w-full !h-10"
+          inputStyle={{
+            width: '100%',
+            borderRadius: '0.5rem',
+            borderColor: errors.phone ? '#ef4444' : '#d1d5db',
+          }}
+        />
+
+
+
+      {errors.phone && (
+        <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
+      )}
+    </div>
+
+
+        {/* ADDRESS  line1 */}
         <div>
-          <label className="block text-sm font-medium mb-1">Address</label>
-          <textarea
-            rows={3}
-            value={form.address}
+          <label className="block text-sm font-medium mb-1">Addres Line1 <span className="text-red-500">*</span></label>
+          <input
+            
+            value={form.addressLine1}
             onChange={(e) => {
-              setForm({ ...form, address: e.target.value });
-              setErrors({ ...errors, address: '' });
+              setForm({ ...form, addressLine1: e.target.value });
+              setErrors({ ...errors, addressLine1: '' });
             }}
             className={`w-full px-4 py-2 rounded-lg border ${
-              errors.address ? 'border-red-500' : 'border-gray-300'
+              errors.addressLine1 ? 'border-red-500' : 'border-gray-300'
             }`}
           />
-          {errors.address && (
-            <p className="text-sm text-red-500 mt-1">{errors.address}</p>
+          {errors.addressLine1 && (
+            <p className="text-sm text-red-500 mt-1">{errors.addressLine1}</p>
           )}
         </div>
+         {/* ADDRESS line2 */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Address Line2</label>
+          <input
+            
+            value={form.addressLine2}
+            onChange={(e) => {
+              setForm({ ...form,addressLine2: e.target.value });
+              setErrors({ ...errors, addressLine1: '' });
+            }}
+            className={`w-full px-4 py-2 rounded-lg border ${
+              errors.addressLine1 ? 'border-red-500' : 'border-gray-300'
+            }`}
+          />
+          {/* {errors.address && (
+            <p className="text-sm text-red-500 mt-1">{errors.address}</p>
+          )} */}
+          {/* city */}
+        </div>
+              <div>
+        <label className="block text-sm font-medium mb-1">
+          City <span className="text-red-500">*</span>
+        </label>
+        <input
+          value={form.city}
+          onChange={(e) => {
+            setForm({ ...form, city: e.target.value });
+            setErrors({ ...errors, city: '' });
+          }}
+          className={`w-full px-4 py-2 rounded-lg border ${
+            errors.city ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {errors.city && (
+          <p className="text-sm text-red-500 mt-1">{errors.city}</p>
+        )}
+      </div>
+      {/* state */}
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          State / Province <span className="text-red-500">*</span>
+        </label>
+        <input
+          value={form.stateProvince}
+          onChange={(e) => {
+            setForm({ ...form, stateProvince: e.target.value });
+            setErrors({ ...errors, stateProvince: '' });
+          }}
+          className={`w-full px-4 py-2 rounded-lg border ${
+            errors.stateProvince ? 'border-red-500' : 'border-gray-300'
+          }`}
+        />
+        {errors.stateProvince && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.stateProvince}
+          </p>
+        )}
+      </div>
+            {/* postal code */}
+              <div>
+              <label className="block text-sm font-medium mb-1">
+                Postal Code <span className="text-red-500">*</span>
+              </label>
+              <input
+                value={form.postalCode}
+                onChange={(e) => {
+                  setForm({ ...form, postalCode: e.target.value });
+                  setErrors({ ...errors, postalCode: '' });
+                }}
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  errors.postalCode ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.postalCode && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.postalCode}
+                </p>
+              )}
+            </div>
+            {/* country */}
+          <div>
+        <label className="block text-sm font-medium mb-1">
+          Country <span className="text-red-500">*</span>
+        </label>
+
+        <select
+          value={form.country}
+          onChange={(e) => {
+            setForm({ ...form, country: e.target.value });
+            setErrors({ ...errors, country: '' });
+          }}
+          className={`w-full px-4 py-2 rounded-lg border bg-white ${
+            errors.country ? 'border-red-500' : 'border-gray-300'
+          }`}
+        >
+          <option value="">Select Country</option>
+          <option value="India">India</option>
+          <option value="United States">United States</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Australia">Australia</option>
+          <option value="Canada">Canada</option>
+        </select>
+
+        {errors.country && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.country}
+          </p>
+        )}
+      </div>
 
         {/* STATUS */}
         <div>

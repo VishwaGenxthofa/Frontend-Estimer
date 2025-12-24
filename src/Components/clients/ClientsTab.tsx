@@ -65,10 +65,11 @@ const ClientsTab: React.FC = () => {
       content: (
         <Descriptions column={1} bordered size="small">
           <Descriptions.Item label="ID">{client.clientId}</Descriptions.Item>
-          <Descriptions.Item label="Name">{client.clientName}</Descriptions.Item>
+          <Descriptions.Item label="Name">{client.companyName}</Descriptions.Item>
+           <Descriptions.Item label="Name">{client.companyContactPerson}</Descriptions.Item>
           <Descriptions.Item label="Email">{client.email}</Descriptions.Item>
           <Descriptions.Item label="Phone">{client.phone}</Descriptions.Item>
-          <Descriptions.Item label="Address">{client.address}</Descriptions.Item>
+          <Descriptions.Item label="Address">{client.addressLine1}</Descriptions.Item>
           <Descriptions.Item label="Status">
             {client.isActive ? (
               <Tag color="green">Active</Tag>
@@ -89,9 +90,9 @@ const ClientsTab: React.FC = () => {
       key: 'clientId',
     },
     {
-      title: 'Name',
-      dataIndex: 'clientName',
-      key: 'clientName',
+      title: 'companyName',
+      dataIndex: 'companyName',
+      key: 'companyName',
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -119,7 +120,7 @@ const ClientsTab: React.FC = () => {
         </div>
       ),
       onFilter: (value: string, record: Client) =>
-        record.clientName
+        record.companyName
           ?.toLowerCase()
           .includes(value.toLowerCase()),
     },

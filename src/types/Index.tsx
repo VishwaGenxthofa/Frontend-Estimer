@@ -7,10 +7,16 @@ export interface User {
 
 export interface Client {
   clientId: number;
-  clientName: string;
+  companyName: string;
+  companyContactPerson:string;
   email: string;
   phone: string;
-  address: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
   isActive:boolean;
 }
 
