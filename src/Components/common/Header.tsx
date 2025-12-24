@@ -4,6 +4,8 @@ import { LogOut, Bell, Settings, User as UserIcon } from 'lucide-react';
 import type { User } from '../../types/Index';
 import glogo from '../../assets/logo.png';
 import genx from '../../assets/glogo.gif'
+import estimerlogo from '../../assets/estimer-logo.png'
+import estimericon from '../../assets/estimer-icon.png'
 interface HeaderProps {
   user: User;
   onLogout: () => void;
@@ -18,14 +20,15 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
         
        <div className="flex items-center gap-4">
 
-  <img src={glogo} alt="Logo" className="hidden sm:block cursor-pointer " />
+  <img src={glogo} alt="Logo" className="hidden sm:block cursor-pointer  " />
 
  
   <img src={genx} className="block sm:hidden cursor-pointer w-12 h-12"  />
 </div>
-
-        <h2 className="text-2xl text-gray-900 font-bold">ESTIMER</h2>
-
+         <div className='flex items-center gap-4'>
+          <img src={estimericon} alt="Logo" className="block sm:hidden cursor-pointer w-14 h-14 " />
+        <img src={estimerlogo} className="hidden sm:block cursor-pointer" width={180}height={170} />
+         </div>
         {/* Right */}
         <div className="flex items-center gap-4 relative">
           
