@@ -32,6 +32,14 @@ export interface Project {
   payment_terms: number;
   status: string;
 }
+export interface ProjectStatus {
+  projectStatusId: number;
+  statusName: string;
+  description: string;
+  displayOrder: number;
+  statusColor: string;
+  isActive: boolean;
+}
 
 export interface TeamMember {
   team_id: number;
