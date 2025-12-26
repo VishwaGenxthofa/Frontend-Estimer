@@ -90,18 +90,18 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       newErrors.email = 'Invalid email format';
 
     if (!form.phone) {
-  errors.phone = 'Phone number is required';
+   newErrors.phone = 'Phone number is required';
 } else if (form.phone.length < 7) {
-  errors.phone = 'Enter valid phone number';
+   newErrors.phone = 'Enter valid phone number';
 }
 
     if (!form.addressLine1.trim())
       newErrors.addressLine1 = 'Address is required';
-    if (!form.city) errors.city = 'City is required';
-if (!form.stateProvince) errors.stateProvince = 'State is required';
-if (!form.postalCode) errors.postalCode = 'Postal code is required';
-if (!form.country) errors.country = 'Country is required';
- if (!form.companyContactPerson)newErrors.companyContactPerson='companyContactPerson is required'
+    if (!form.city)  newErrors.city = 'City is required';
+if (!form.stateProvince)  newErrors.stateProvince = 'State is required';
+if (!form.postalCode)  newErrors.postalCode = 'Postal code is required';
+if (!form.country)  newErrors.country = 'Country is required';
+ if (!form.companyContactPerson) newErrors.companyContactPerson='companyContactPerson is required'
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -157,7 +157,7 @@ if (!form.country) errors.country = 'Country is required';
         {/* CLIENT NAME */}
         <div>
           <label className="block text-sm font-medium mb-1">
-            companyName <span className="text-red-500">*</span>
+            CompanyName <span className="text-red-500">*</span>
           </label>
           <input
             name="clientName"
@@ -176,7 +176,7 @@ if (!form.country) errors.country = 'Country is required';
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            companyContactPerson <span className="text-red-500">*</span>
+            CompanyContactPerson <span className="text-red-500">*</span>
           </label>
           <input
             name="clientName"
@@ -286,16 +286,17 @@ if (!form.country) errors.country = 'Country is required';
               setForm({ ...form,addressLine2: e.target.value });
               setErrors({ ...errors, addressLine1: '' });
             }}
-            className={`w-full px-4 py-2 rounded-lg border ${
-              errors.addressLine1 ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
+            className='w-full px-4 py-2 rounded-lg border border-gray-300'
+            />
           {/* {errors.address && (
             <p className="text-sm text-red-500 mt-1">{errors.address}</p>
           )} */}
+
+
           {/* city */}
         </div>
-              <div>
+        <div className='flex w-full gap-4 justify-between'>
+              <div className='w-full'>
         <label className="block text-sm font-medium mb-1">
           City <span className="text-red-500">*</span>
         </label>
@@ -314,7 +315,7 @@ if (!form.country) errors.country = 'Country is required';
         )}
       </div>
       {/* state */}
-      <div>
+      <div className='w-full'>
         <label className="block text-sm font-medium mb-1">
           State / Province <span className="text-red-500">*</span>
         </label>
@@ -334,8 +335,10 @@ if (!form.country) errors.country = 'Country is required';
           </p>
         )}
       </div>
+      </div>
+          <div className='flex w-full gap-4 justify-between'>
             {/* postal code */}
-              <div>
+              <div className='w-full'>
               <label className="block text-sm font-medium mb-1">
                 Postal Code <span className="text-red-500">*</span>
               </label>
@@ -356,7 +359,7 @@ if (!form.country) errors.country = 'Country is required';
               )}
             </div>
             {/* country */}
-          <div>
+          <div className='w-full'>
         <label className="block text-sm font-medium mb-1">
           Country <span className="text-red-500">*</span>
         </label>
@@ -385,16 +388,15 @@ if (!form.country) errors.country = 'Country is required';
           </p>
         )}
       </div>
-
+        </div>
         {/* STATUS */}
         <div>
           <label className="block text-sm font-medium mb-2">Status</label>
           <Switch
             checked={form.isActive}
-            onChange={(checked) => setForm({ ...form, isActive: checked })}
+            onChange={() => setForm({ ...form, isActive: true })}
             checkedChildren="Active"
-            unCheckedChildren="Inactive"
-            style={{ backgroundColor: form.isActive ? 'green' : 'red' }}
+            style={{ backgroundColor: 'green' }}
           />
         </div>
 

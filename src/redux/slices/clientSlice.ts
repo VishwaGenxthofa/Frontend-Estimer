@@ -30,10 +30,16 @@ export const fetchClients = createAsyncThunk<
     const clients = response.data?.data?.data ?? [];
     return clients.map((c: any): Client => ({
       clientId: c.clientId,
-      clientName: c.clientName ?? '',
+      companyName: c.companyName ?? '',
+      companyContactPerson:c.companyContactPerson ?? '',
       email: c.email ?? '',
       phone: c.phone ?? '',
-      address: c.address ?? '',
+      addressLine1:c.addressLine1 ?? '',
+      addressLine2:c.addressLine2 ?? '',
+     city:c.city ?? '',
+     stateProvince: c.stateProvince?? '',
+     postalCode:c.postalCode ?? '',
+    country: c.country?? '',
       isActive: Boolean(c.isActive),
     }));
   } catch (err: any) {

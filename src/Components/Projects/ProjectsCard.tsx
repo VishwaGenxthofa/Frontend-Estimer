@@ -30,7 +30,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       <div className="space-y-2 text-sm mb-4">
-        <p><span className="text-gray-600">Client:</span> <span className="font-medium">{client?.client_name}</span></p>
+        <p><span className="text-gray-600">Client:</span> <span className="font-medium">{client?.companyName}</span></p>
         <p><span className="text-gray-600">Start:</span> {project.start_date}</p>
         <p><span className="text-gray-600">Payment Terms:</span> {project.payment_terms} days</p>
       </div>

@@ -24,6 +24,8 @@ export interface Project {
   project_id: number;
   project_name: string;
   project_code: string;
+  projectManagerId: string;
+  projectStatusId: string;
   client_id: string;
   start_date: string;
   end_date: string;
