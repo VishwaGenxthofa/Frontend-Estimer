@@ -21,7 +21,7 @@ export interface Client {
 }
 
 export interface Project {
-  projectId: number;
+  projectId?: number;
   projectName: string;
  projectCode: string;
   projectManagerId: number;

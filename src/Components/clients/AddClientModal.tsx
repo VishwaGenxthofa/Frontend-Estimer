@@ -9,6 +9,11 @@ import toast from 'react-hot-toast';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 /* ===================== TYPES ===================== */
+interface PhoneCountry {
+  countryCode: string;
+  dialCode: string;
+  name: string;
+}
 
 interface Errors {
   companyName?: string;
@@ -73,9 +78,6 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
       });
     }
   }, [editingClient]);
-
-  
-
   const validate = (): boolean => {
     const newErrors: Errors = {};
 
@@ -219,36 +221,40 @@ if (!form.country)  newErrors.country = 'Country is required';
       <label className="block text-sm font-medium mb-1">
         Phone <span className="text-red-500">*</span>
       </label>
+<PhoneInput
+  country="in"
+  value={form.phone}
+  onChange={(value, country) => {
+    const digits = value.replace(/\D/g, '');
+    let cleanPhone = digits;
 
-            <PhoneInput
-          country="in"
-          value={form.phone}
-          onChange={(value, country) => {
-            const digits = value.replace(/\D/g, '');
+    // ✅ TYPE GUARD
+    if (
+      country &&
+      typeof country === 'object' &&
+      'countryCode' in country &&
+      country.countryCode === 'in' &&
+      digits.startsWith('91')
+    ) {
+      cleanPhone = digits.slice(2);
+    }
 
-            let cleanPhone = digits;
+    setForm({
+      ...form,
+      phone: cleanPhone, // ✅ ONLY 10 digits
+    });
 
-            // remove India country code
-            if (country?.countryCode === 'in' && digits.startsWith('91')) {
-              cleanPhone = digits.slice(2);
-            }
-
-            setForm({
-              ...form,
-              phone: cleanPhone, // ✅ ONLY 10 digits
-            });
-
-            setErrors({ ...errors, phone: '' });
-          }}
-          enableSearch
-          inputProps={{ required: true }}
-          inputClass="!w-full !h-10"
-          inputStyle={{
-            width: '100%',
-            borderRadius: '0.5rem',
-            borderColor: errors.phone ? '#ef4444' : '#d1d5db',
-          }}
-        />
+    setErrors({ ...errors, phone: '' });
+  }}
+  enableSearch
+  inputProps={{ required: true }}
+  inputClass="!w-full !h-10"
+  inputStyle={{
+    width: '100%',
+    borderRadius: '0.5rem',
+    borderColor: errors.phone ? '#ef4444' : '#d1d5db',
+  }}
+/>
 
 
 
