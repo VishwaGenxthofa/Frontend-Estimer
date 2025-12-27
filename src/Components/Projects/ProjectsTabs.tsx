@@ -48,13 +48,13 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((proj) => {
-          const client = clients.find((c) => c.client_id === parseInt(proj.client_id));
-          const teamCount = teamMembers.filter((tm) => tm.project_id === proj.project_id).length;
-          const milestoneCount = milestones.filter((m) => m.project_id === proj.project_id).length;
+          const client = clients.find((c) => c.clientId === parseInt(proj.clientId));
+          const teamCount = teamMembers.filter((tm) => tm.project_id === proj.projectId).length;
+          const milestoneCount = milestones.filter((m) => m.project_id === proj.projectId).length;
 
           return (
             <ProjectCard
-              key={proj.project_id}
+              key={proj.projectId}
               project={proj}
               client={client}
               teamCount={teamCount}

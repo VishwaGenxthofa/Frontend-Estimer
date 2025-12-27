@@ -21,16 +21,16 @@ export interface Client {
 }
 
 export interface Project {
-  project_id: number;
-  project_name: string;
-  project_code: string;
-  projectManagerId: string;
-  projectStatusId: string;
-  client_id: string;
-  start_date: string;
-  end_date: string;
-  payment_terms: number;
-  status: string;
+  projectId: number;
+  projectName: string;
+ projectCode: string;
+  projectManagerId: number;
+  projectStatusId: number;
+ clientId: number;
+ startDate: string;
+  plannedEndDate: string;
+  paymentTerms: number;
+  finalBillingAmount:Number;
 }
 export interface ProjectStatus {
   projectStatusId: number;

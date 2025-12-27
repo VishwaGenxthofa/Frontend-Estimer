@@ -35,14 +35,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   const totalInvoices = invoices.length;
   const paidInvoices = invoices.filter(i => i.status === 'Paid').length;
   const unpaidBalance = invoices.reduce((sum, i) => sum + i.balance, 0);
-const clientCount = useSelector(
-    (state: RootState) => state.clients.clients.length
-  );
+const clientCount = useSelector((state: RootState) => state.clients.clients.length);
+const project=useSelector((state:RootState)=> state.project.projects.length);
+console.log('Length:', projects.length);
+
   const stats = isAdmin
     ? [
         {
           label: 'Total Projects',
-          value: totalProjects,
+          value: project,
           color: 'green',
           icon: FolderKanban,
           border: "border-green-500",

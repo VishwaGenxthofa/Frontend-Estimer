@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Modal from '../common/Modal';
 import type { Project, Client } from '../../types/Index';
-import { Plus,Check } from 'lucide-react';
+import { Plus,Check,Trash2 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch,RootState } from '../../redux/slices/store';
+
+import {
+  fetchProjectStatuses,
+  createProjectStatus,
+  deleteProjectStatus,
+} from '../../redux/slices/projectStatusSlice';
+import { createProject} from '../../redux/slices/projectSlice';
 interface CreateProjectModalProps {
   onClose: () => void;
   projects: Project[];
@@ -11,57 +20,107 @@ interface CreateProjectModalProps {
 
 const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   onClose,
-  projects,
+   projects,
   setProjects,
   clients,
 }) => {
   const [showAddStatus, setShowAddStatus] = useState(false);
+   const dispatch = useDispatch<AppDispatch>();
+
+const { statuses, loading } = useSelector(
+  (state: RootState) => state.projectStatus);
+const [errors, setErrors] = useState<{
+  projectName?: string;
+  projectCode?: string;
+  clientId?: string;
+  projectManagerId?: string;
+  projectStatusId?: string;
+  startDate?: string;
+  plannedEndDate?: string;
+  paymentTerms?: string;
+}>({});
+const validateForm = () => {
+  const newErrors: typeof errors = {};
+
+  if (!form.projectName?.trim()) newErrors.projectName = 'Project Name is required';
+  if (!form.projectCode?.trim()) newErrors.projectCode = 'Project Code is required';
+  if (!form.clientId) newErrors.clientId = 'Client is required';
+  if (!form.projectManagerId) newErrors.projectManagerId = 'Project Manager is required';
+  if (!form.projectStatusId) newErrors.projectStatusId = 'Project Status is required';
+  if (!form.startDate) newErrors.startDate = 'Start Date is required';
+  if (!form.plannedEndDate) newErrors.plannedEndDate = 'Planned End Date is required';
+  if (!form.paymentTerms || form.paymentTerms < 0)
+    newErrors.paymentTerms = 'Payment Terms must be a positive number';
+
+  setErrors(newErrors);
+
+  // Return true if no errors
+  return Object.keys(newErrors).length === 0;
+};
+
   const [form, setForm] = useState({
-    project_name: '',
-    project_code: '',
-    client_id: '',
+   projectName: '',
+   projectCode: '',
+   clientId: '',
     projectManagerId: '',
     projectStatusId: '',
-    start_date: '',
-    end_date: '',
-    payment_terms: 30,
+    startDate: '',
+    plannedEndDate: '',
+    paymentTerms: 30,
+     finalBillingAmount:0,
   });
 
-  const handleSubmit = () => {
-    if (!form.project_name || !form.project_code || !form.client_id) {
-      alert('Please fill in all required fields');
-      return;
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    const payload: Project = {
+      projectName: form.projectName,
+      projectCode: form.projectCode,
+      clientId: Number(form.clientId),
+      projectManagerId: Number(form.projectManagerId),
+      projectStatusId: Number(form.projectStatusId),
+      startDate: form.startDate,
+      plannedEndDate: form.plannedEndDate,
+      paymentTerms: Number(form.paymentTerms),
+      finalBillingAmount: Number(form.finalBillingAmount) || 0,
+    };
+
+    try {
+      const action = await dispatch(createProject(payload));
+
+      if (createProject.fulfilled.match(action)) {
+        setForm({
+          projectName: '',
+          projectCode: '',
+          clientId: '',
+          projectManagerId: '',
+          projectStatusId: '',
+          startDate: '',
+          plannedEndDate: '',
+          paymentTerms: 30,
+          finalBillingAmount: 0,
+        });
+        setErrors({});
+        onClose();
+      } else {
+        // API error
+        setErrors({ projectName: action.payload as string });
+      }
+    } catch {
+      setErrors({ projectName: 'Something went wrong' });
     }
-
-    setProjects([
-      ...projects,
-      {
-        project_id: Math.max(...projects.map(p => p.project_id), 0) + 1,
-        ...form,
-        client_id: form.client_id.toString(),
-        status: 'Planning',
-      },
-    ]);
-
-    onClose();
-    setForm({
-      project_name: '',
-      project_code: '',
-      client_id: '',
-      projectManagerId: '',
-    projectStatusId: '',
-      start_date: '',
-      end_date: '',
-      payment_terms: 30,
-    });
   };
+
 const [newStatus, setNewStatus] = useState({
     statusName: '',
     description: '',
     displayOrder: '',
     statusColor: '#3b82f6'
   });
-
+ useEffect(() => {
+    dispatch(fetchProjectStatuses());
+   
+  },[dispatch])
   // Mock data
   // const [clients] = useState([
   //   { id: 1, name: 'Acme Corp' },
@@ -75,12 +134,12 @@ const [newStatus, setNewStatus] = useState({
     { id: 3, name: 'Mike Johnson' }
   ]);
 
-  const [projectStatuses, setProjectStatuses] = useState([
-    { id: 1, statusName: 'Planning', statusColor: '#3b82f6' },
-    { id: 2, statusName: 'In Progress', statusColor: '#f59e0b' },
-    { id: 3, statusName: 'On Hold', statusColor: '#ef4444' },
-    { id: 4, statusName: 'Completed', statusColor: '#10b981' }
-  ]);
+  // const [projectStatuses, setProjectStatuses] = useState([
+  //   { id: 1, statusName: 'Planning', statusColor: '#3b82f6' },
+  //   { id: 2, statusName: 'In Progress', statusColor: '#f59e0b' },
+  //   { id: 3, statusName: 'On Hold', statusColor: '#ef4444' },
+  //   { id: 4, statusName: 'Completed', statusColor: '#10b981' }
+  // ]);
 
   const handleInputChange = (e:any) => {
     const { name, value } = e.target;
@@ -92,59 +151,89 @@ const [newStatus, setNewStatus] = useState({
     setNewStatus(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAddStatus = () => {
-    if (newStatus.statusName.trim()) {
-      const newStatusObj = {
-        id: projectStatuses.length + 1,
-        statusName: newStatus.statusName,
-        statusColor: newStatus.statusColor,
-        description: newStatus.description,
-        displayOrder: newStatus.displayOrder || projectStatuses.length + 1
-      };
-      
-      setProjectStatuses(prev => [...prev, newStatusObj]);
-      setForm(prev => ({ ...prev, projectStatusId: newStatusObj.id }));
-      
-      // Reset new status form
+   const handleAddStatus = async () => {
+    if (!newStatus.statusName.trim()) return;
+
+    const payload = {
+      statusName: newStatus.statusName,
+      description: newStatus.description,
+      displayOrder: Number(newStatus.displayOrder) || 1,
+      statusColor: newStatus.statusColor,
+      isActive: true,
+    };
+
+    const action = await dispatch(createProjectStatus(payload));
+
+    if (createProjectStatus.fulfilled.match(action)) {
+      setForm((prev: any) => ({
+        ...prev,
+        projectStatusId: action.payload.projectStatusId,
+      }));
+
       setNewStatus({
         statusName: '',
         description: '',
         displayOrder: '',
-        statusColor: '#3b82f6'
+        statusColor: '#3b82f6',
       });
+
       setShowAddStatus(false);
     }
   };
 
+  const handleDeleteStatus = (id: number) => {
+    if (!confirm('Are you sure you want to delete this status?')) return;
+
+    dispatch(deleteProjectStatus(id));
+
+    // clear selected if deleted
+    if (Number(form.projectStatusId) === id) {
+      setForm((prev: any) => ({ ...prev, projectStatusId: '' }));
+    }
+  };
+
+  const selectedStatus =statuses.find(
+    (s) => s.projectStatusId === Number(form.projectStatusId)
+  );
+  console.log(statuses)
   return (
+    <>
+     
     <Modal onClose={onClose} title="Create New Project">
+      
       <div className="space-y-4">
         <div>
         <label className="block text-sm font-medium mb-1">Project Name <span className="text-red-500">*</span></label>
         <input
           placeholder="Project Name"
-          value={form.project_name}
-          onChange={(e) => setForm({ ...form, project_name: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={form.projectName}
+          onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+           className={`w-full px-3 py-2 border rounded ${
+            errors.projectName ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errors.projectName && <p className="text-red-500 text-sm">{errors.projectName}</p>}
         </div>
         <div>
         <label className="block text-sm font-medium mb-1">Project Code <span className="text-red-500">*</span></label>
         <input
           placeholder="Project Code"
-          value={form.project_code}
-          onChange={(e) => setForm({ ...form, project_code: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={form.projectCode}
+          onChange={(e) => setForm({ ...form, projectCode: e.target.value })}
+          className={`w-full px-3 py-2 border rounded ${
+            errors.projectCode ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errors.projectCode && <p className="text-red-500 text-sm">{errors.projectCode}</p>}
         </div>
         <div>
-        <label className="block text-sm font-medium mb-1">Select Client<span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mb-1"> Company Name<span className="text-red-500">*</span></label>
         <select
-          value={form.client_id}
-          onChange={(e) => setForm({ ...form, client_id: e.target.value })}
+          value={form.clientId}
+          onChange={(e) => setForm({ ...form, clientId: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Select Client *</option>
+          <option value="">Select companyName *</option>
           {clients.map((c) => (
             <option key={c.clientId} value={c.clientId}>
               {c.companyName}
@@ -185,9 +274,10 @@ const [newStatus, setNewStatus] = useState({
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Project Status</option>
-                {projectStatuses.map(status => (
-                  <option key={status.id} value={status.id}>
+                {statuses.map(status => (
+                  <option key={status.projectStatusId} value={status.projectStatusId}>
                     {status.statusName}
+                  
                   </option>
                 ))}
               </select>
@@ -291,16 +381,37 @@ const [newStatus, setNewStatus] = useState({
                 </div>
               </div>
             )}
+             {/* STATUS LIST WITH DELETE */}
+      {/* <div className="mt-4 space-y-2">
+        {statuses.map((status) => (
+          <div
+            key={status.projectStatusId}
+            className="flex items-center justify-between p-2 border rounded-lg"
+          >
+            <span
+              className="px-3 py-1 rounded-full text-white text-sm"
+              style={{ backgroundColor: status.statusColor }}
+            >
+              {status.statusName}
+            </span>
 
+            <button
+              onClick={() => handleDeleteStatus(status.projectStatusId)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
+        ))}
+      </div> */}
             {/* Display Selected Status with Color */}
-            {form.projectStatusId && (
+            {selectedStatus && (
               <div className="mt-2 flex items-center gap-2">
                 <span className="text-sm text-gray-600">Selected:</span>
                 <span
                   className="px-3 py-1 rounded-full text-sm font-medium text-white"
-                  style={{ backgroundColor: projectStatuses.find(s => s.id === parseInt(form.projectStatusId))?.statusColor }}
-                >
-                  {projectStatuses.find(s => s.id === parseInt(form.projectStatusId))?.statusName}
+                   style={{ backgroundColor: selectedStatus.statusColor }}
+                >   {selectedStatus.statusName}
                 </span>
               </div>
             )}
@@ -312,20 +423,29 @@ const [newStatus, setNewStatus] = useState({
         <input
           type="date"
           placeholder="Start Date"
-          value={form.start_date}
-          onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={form.startDate}
+          onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+         className={`w-full px-3 py-2 border rounded ${
+            errors.startDate ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errors.startDate && <p className="text-red-500 text-sm">{errors.startDate}</p>}
+        
         </div>
         <div className='w-full'>
         <label className="block text-sm font-medium mb-1">End Date<span className="text-red-500">*</span></label>
         <input
           type="date"
           placeholder="Planned End Date"
-          value={form.end_date}
-          onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={form.plannedEndDate}
+          onChange={(e) => setForm({ ...form, plannedEndDate: e.target.value })}
+          className={`w-full px-3 py-2 border rounded ${
+            errors.plannedEndDate ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errors.plannedEndDate && (
+          <p className="text-red-500 text-sm">{errors.plannedEndDate}</p>
+        )}
         </div>
         </div>
         <div>
@@ -333,10 +453,13 @@ const [newStatus, setNewStatus] = useState({
         <input
           type="number"
           placeholder="Payment Terms (days)"
-          value={form.payment_terms}
-          onChange={(e) => setForm({ ...form, payment_terms: Number(e.target.value) || 30 })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={form.paymentTerms}
+          onChange={(e) => setForm({ ...form, paymentTerms: Number(e.target.value) || 30 })}
+          className={`w-full px-3 py-2 border rounded ${
+            errors.paymentTerms ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errors.paymentTerms && <p className="text-red-500 text-sm">{errors.paymentTerms}</p>}
         </div>
 
         <div className="flex gap-3 pt-4">
@@ -355,6 +478,7 @@ const [newStatus, setNewStatus] = useState({
         </div>
       </div>
     </Modal>
+    </>
   );
 };
 
