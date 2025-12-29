@@ -28,7 +28,8 @@ export const fetchClients = createAsyncThunk<
   try {
     const response = await api.get(`/Client?page=${page}&pageSize=${pageSize}`);
     const clients = response.data?.data?.data ?? [];
-    return clients.map((c: any): Client => ({
+    
+    return clients.map((c:any): Client => ({
       clientId: c.clientId,
       companyName: c.companyName ?? '',
       companyContactPerson:c.companyContactPerson ?? '',

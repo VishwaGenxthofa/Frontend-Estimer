@@ -1,5 +1,5 @@
 // src/components/dashboard/Dashboard.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Project, Estimate, Invoice } from '../../types/Index';
 import {
   FolderKanban,
@@ -21,8 +21,9 @@ interface DashboardProps {
   estimates: Estimate[];
   invoices: Invoice[];
 }
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../redux/slices/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch,RootState } from '../../redux/slices/store';
+import { fetchProjects } from '../../redux/slices/projectSlice';
 const Dashboard: React.FC<DashboardProps> = ({
   isAdmin,
   projects,
@@ -36,14 +37,19 @@ const Dashboard: React.FC<DashboardProps> = ({
   const paidInvoices = invoices.filter(i => i.status === 'Paid').length;
   const unpaidBalance = invoices.reduce((sum, i) => sum + i.balance, 0);
 const clientCount = useSelector((state: RootState) => state.clients.clients.length);
-const project=useSelector((state:RootState)=> state.project.projects.length);
-console.log('Length:', projects.length);
+const projectcount=useSelector((state:RootState)=> state.project.projects.length);
+const dispatch=useDispatch<AppDispatch>()
+
+console.log("projects",projectcount);
+useEffect(()=>{
+  dispatch(fetchProjects({ page: 2, pageSize: 20 }))
+},[dispatch])
 
   const stats = isAdmin
     ? [
         {
           label: 'Total Projects',
-          value: project,
+          value: projectcount,
           color: 'green',
           icon: FolderKanban,
           border: "border-green-500",

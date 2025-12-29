@@ -1,11 +1,14 @@
 // src/components/projects/ProjectsTab.tsx
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import ProjectCard from './ProjectsCard';
 import CreateProjectModal from './CreateProjectModal';
 import ProjectManagementModal from './ProjectManagementModal/ProjectManagementModal';
 import Modal from '../common/Modal';
 import type { Project, Client, TeamMember, Milestone } from '../../types/Index';
+import { useDispatch, useSelector } from 'react-redux';
+import type{ AppDispatch ,RootState} from '../../redux/slices/store';
+import { fetchProjects } from '../../redux/slices/projectSlice';
 
 interface ProjectsTabProps {
   projects: Project[];
@@ -19,7 +22,7 @@ interface ProjectsTabProps {
 }
 
 const ProjectsTab: React.FC<ProjectsTabProps> = ({
-  projects,
+  // projects,
   setProjects,
   clients,
   isAdmin,
@@ -30,9 +33,14 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [viewProject, setViewProject] = useState<Project | null>(null);
-
+  const dispatch=useDispatch<AppDispatch>()
+  const projects=useSelector((state:RootState)=>state.project.projects)
+  useEffect(()=>{
+    dispatch(fetchProjects({ page: 2, pageSize: 20 }))
+  },[dispatch])
+  
   return (
-    <div>
+    <div className='p-4 overflow-y-auto max-h-screen"'>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Projects</h2>
         {isAdmin && (
@@ -48,7 +56,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((proj) => {
-          const client = clients.find((c) => c.clientId === parseInt(proj.clientId));
+          const client = clients.find((c) => c.clientId === proj.clientId);
           const teamCount = teamMembers.filter((tm) => tm.project_id === proj.projectId).length;
           const milestoneCount = milestones.filter((m) => m.project_id === proj.projectId).length;
 

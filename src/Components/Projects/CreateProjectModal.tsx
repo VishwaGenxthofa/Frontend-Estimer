@@ -4,7 +4,7 @@ import type { Project, Client } from '../../types/Index';
 import { Plus,Check,Trash2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch,RootState } from '../../redux/slices/store';
-
+import toast from 'react-hot-toast';
 import {
   fetchProjectStatuses,
   createProjectStatus,
@@ -70,46 +70,57 @@ const validateForm = () => {
      finalBillingAmount:0,
   });
 
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+  
 
-    const payload: Project = {
-      projectName: form.projectName,
-      projectCode: form.projectCode,
-      clientId: Number(form.clientId),
-      projectManagerId: Number(form.projectManagerId),
-      projectStatusId: Number(form.projectStatusId),
-      startDate: form.startDate,
-      plannedEndDate: form.plannedEndDate,
-      paymentTerms: Number(form.paymentTerms),
-      finalBillingAmount: Number(form.finalBillingAmount) || 0,
-    };
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    toast.error("Please fix validation errors");
+    return;
+  }
 
-    try {
-      const action = await dispatch(createProject(payload));
-
-      if (createProject.fulfilled.match(action)) {
-        setForm({
-          projectName: '',
-          projectCode: '',
-          clientId: '',
-          projectManagerId: '',
-          projectStatusId: '',
-          startDate: '',
-          plannedEndDate: '',
-          paymentTerms: 30,
-          finalBillingAmount: 0,
-        });
-        setErrors({});
-        onClose();
-      } else {
-        // API error
-        setErrors({ projectName: action.payload as string });
-      }
-    } catch {
-      setErrors({ projectName: 'Something went wrong' });
-    }
+  const payload: Project = {
+    projectName: form.projectName,
+    projectCode: form.projectCode,
+    clientId: Number(form.clientId),
+    projectManagerId: Number(form.projectManagerId),
+    projectStatusId: Number(form.projectStatusId),
+    startDate: form.startDate,
+    plannedEndDate: form.plannedEndDate,
+    paymentTerms: Number(form.paymentTerms),
+    finalBillingAmount: Number(form.finalBillingAmount) || 0,
   };
+
+  try {
+    const action = await dispatch(createProject(payload));
+
+    if (createProject.fulfilled.match(action)) {
+      toast.success("Project created successfully ✅");
+
+      setForm({
+        projectName: "",
+        projectCode: "",
+        clientId: "",
+        projectManagerId: "",
+        projectStatusId: "",
+        startDate: "",
+        plannedEndDate: "",
+        paymentTerms: 30,
+        finalBillingAmount: 0,
+      });
+
+      setErrors({});
+      onClose();
+    } else {
+      const errorMsg =
+        (action.payload as string) || "Failed to create project";
+      toast.error(errorMsg);
+      setErrors({ projectName: errorMsg });
+    }
+  } catch (error) {
+    toast.error("Something went wrong ");
+    setErrors({ projectName: "Something went wrong" });
+  }
+};
 
 const [newStatus, setNewStatus] = useState({
     statusName: '',
@@ -195,7 +206,7 @@ const [newStatus, setNewStatus] = useState({
   const selectedStatus =statuses.find(
     (s) => s.projectStatusId === Number(form.projectStatusId)
   );
-  console.log(statuses)
+  
   return (
     <>
      

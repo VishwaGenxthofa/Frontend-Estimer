@@ -9,6 +9,7 @@ import ClientsTab from './Components/clients/ClientsTab';
 import ProjectsTab from './Components/Projects/ProjectsTabs';
 import EstimatesTab from './Components/estimates/EstimatesTab';
 import InvoicesTab from './Components/invoices/InvoicesTab';
+import { Toaster } from 'react-hot-toast';
 import type {
   User,
   Client,
@@ -34,7 +35,7 @@ const App: React.FC = () => {
   const isAdmin = user?.role === 'Admin';
   return (
     <Routes>
-   
+           
       <Route
         path="/login"
         element={

@@ -29,7 +29,7 @@ export const fetchProjects = createAsyncThunk<
       );
 
       const projects = response.data?.data?.data ?? [];
-
+      console.table("project",projects)
       return projects.map((p: any): Project => ({
         projectId: p.projectId,
         projectName: p.projectName ?? '',
@@ -77,7 +77,8 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loading = false;
-        state.projects = action.payload;
+         console.log('API project DATA:', action.payload);
+        state.projects = (action.payload);
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
