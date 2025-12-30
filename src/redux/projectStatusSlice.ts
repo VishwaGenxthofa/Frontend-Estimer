@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
-import type { ProjectStatus } from '../../types/Index';
-import { saveStatusesToStorage, getStatusesFromStorage } from '../../utils/projectstatusStorage';
+import api from '../api/axios';
+import type { ProjectStatus } from '../types/Index';
+import { saveStatusesToStorage, getStatusesFromStorage } from '../utils/projectstatusStorage';
 interface ProjectStatusState {
   statuses: ProjectStatus[];
   loading: boolean;

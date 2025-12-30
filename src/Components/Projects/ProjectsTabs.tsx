@@ -7,8 +7,8 @@ import ProjectManagementModal from './ProjectManagementModal/ProjectManagementMo
 import Modal from '../common/Modal';
 import type { Project, Client, TeamMember, Milestone } from '../../types/Index';
 import { useDispatch, useSelector } from 'react-redux';
-import type{ AppDispatch ,RootState} from '../../redux/slices/store';
-import { fetchProjects } from '../../redux/slices/projectSlice';
+import type{ AppDispatch ,RootState} from '../../redux/store';
+import { fetchProjects } from '../../redux/projectSlice';
 
 interface ProjectsTabProps {
   projects: Project[];

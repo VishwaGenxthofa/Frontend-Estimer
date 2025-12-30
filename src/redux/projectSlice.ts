@@ -1,7 +1,7 @@
 // redux/slices/projectSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
-import type { Project } from '../../types/Index';
+import api from '../api/axios';
+import type { Project } from '../types/Index';
 
 interface ProjectState {
   projects: Project[];

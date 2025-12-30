@@ -3,14 +3,14 @@ import Modal from '../common/Modal';
 import type { Project, Client } from '../../types/Index';
 import { Plus,Check,Trash2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch,RootState } from '../../redux/slices/store';
+import type { AppDispatch,RootState } from '../../redux/store';
 import toast from 'react-hot-toast';
 import {
   fetchProjectStatuses,
   createProjectStatus,
   deleteProjectStatus,
-} from '../../redux/slices/projectStatusSlice';
-import { createProject} from '../../redux/slices/projectSlice';
+} from '../../redux/projectStatusSlice';
+import { createProject} from '../../redux/projectSlice';
 interface CreateProjectModalProps {
   onClose: () => void;
   projects: Project[];

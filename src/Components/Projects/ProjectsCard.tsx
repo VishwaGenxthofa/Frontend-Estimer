@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { Users, FileText } from 'lucide-react';
 import type { Project, Client } from '../../types/Index';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../../redux/slices/store';
-import { fetchProjects } from '../../redux/slices/projectSlice';
+import type { AppDispatch, RootState } from '../../redux//store';
+import { fetchProjects } from '../../redux/projectSlice';
 import { FaCalendarAlt, FaUserClock } from "react-icons/fa";
 import { Toaster } from 'react-hot-toast';
+import { fetchTeamMembersByProject } from '../../redux/teamMemberSlice';
 interface ProjectCardProps {
   project: Project;
   client: Client | undefined;
@@ -17,7 +18,7 @@ interface ProjectCardProps {
 const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   client,
-  teamCount,
+  // teamCount,
   milestoneCount,
   onManage,
 }) => {
@@ -29,8 +30,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       year: "numeric",
     });
   };
+  const { members, loading } = useSelector( (state:RootState) => state.teamMember);
+  const dispatch=useDispatch<AppDispatch>()
+  useEffect(() => {
+    if (!project.projectId) return;
+  
+    dispatch(fetchTeamMembersByProject(project.projectId));
+  }, [dispatch, project.projectId]);
+  
+  
   console.log(project.statusColor);
-
+const teamCount = members.length;
   return (
     // <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
     //   <div className="flex justify-between items-start mb-4">
@@ -192,7 +202,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             </div>
           </div>
-
+          
           {/* Info Grid */}
           <div className="grid grid-cols-2 gap-4 mb-7">
             <div className="bg-white border-[1.5px] border-slate-200 rounded-lg p-4 transition-all duration-300 hover:border-slate-300 hover:translate-x-1 relative overflow-hidden group">
@@ -215,7 +225,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </div>
             </div>
           </div>
-
+           {/* Team Members and Milestones */}
+          <div className="flex justify-between items-center mb-6 px-2">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="text-sm font-semibold text-slate-700"> {teamCount}  Team Members</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="text-sm font-semibold text-slate-700">0 Milestones</span>
+            </div>
+          </div>
           {/* Action Button */}
           <button   onClick={onManage} className="w-full bg-gradient-to-br from-slate-900 to-blue-900 text-white py-4 px-6 rounded-lg text-[15px] font-bold uppercase tracking-[0.1em] relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-900/30 group">
             <div className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-150 transition-transform duration-500 origin-center"></div>

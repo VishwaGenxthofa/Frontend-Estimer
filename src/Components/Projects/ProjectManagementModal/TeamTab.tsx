@@ -5,10 +5,10 @@ import {
   fetchTeamMembersByProject,
   createTeamMember,
   deleteTeamMember,
-} from '../../../redux/slices/teamMemberSlice';
+} from '../../../redux/teamMemberSlice';
 import { useDispatch,  useSelector } from 'react-redux';
 
-import type { AppDispatch, RootState } from '../../../redux/slices/store';
+import type { AppDispatch, RootState } from '../../../redux/store';
 
 /* ================= MOCK EMPLOYEES (replace with API later) ================= */
 const employees = [
@@ -16,18 +16,38 @@ const employees = [
     employeeId: 101,
     employeeName: 'Rajesh Kumar',
     designation: 'Senior Developer',
-    roleId: 2,
+    
   },
   {
     employeeId: 102,
-    employeeName: 'Anita Sharma',
+    employeeName: 'Priya Sharma',
     designation: 'UI Developer',
-    roleId: 3,
+   
   },
+  {
+    employeeId : 103,
+    employeeName: "Karthik Raja",
+    designation : "Developer",
+},
+
+{
+    employeeId : 104,
+    employeeName: "Divya Lakshmi",
+    designation : "UI/UX Designer",
+    
+},
+
+{
+    employeeId: 105,
+    employeeName: "Arun Prakash",
+    designation :"QA Engineer",
+   
+}
 ];
 
 interface TeamTabProps {
   project: Project;
+  
 }
 
 const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
@@ -37,6 +57,8 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
   const [showAddTeam, setShowAddTeam] = useState(false);
 
   const [teamForm, setTeamForm] = useState({
+    projectTeamMemberId:'',
+     projectId:'',
     employeeId: '',
     employeeName: '',
     designation: '',
@@ -48,13 +70,16 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   /* ================= FETCH TEAM ================= */
-  useEffect(() => {
-    dispatch(fetchTeamMembersByProject(project.projectId));
-  }, [dispatch, project.projectId]);
+useEffect(() => {
+  if (!project.projectId) return;
 
+  dispatch(fetchTeamMembersByProject(project.projectId));
+}, [dispatch, project.projectId]);
   const projTeam = members.filter(
     (tm) => tm.projectId === project.projectId
   );
+console.log('Project ID:', project.projectId);
+console.log('Members from API:', members);
 
   /* ================= VALIDATION ================= */
   const validate = () => {
@@ -78,13 +103,11 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
   const handleAddTeam = () => {
     if (!validate()) return;
 
-    dispatch(
-      createTeamMember({
-        projectId: project.projectId,
+    dispatch(createTeamMember({
+        projectId:project.projectId,
         employeeId: Number(teamForm.employeeId),
         employeeName: teamForm.employeeName,
         designation: teamForm.designation,
-        roleId: Number(teamForm.roleId),
         hourlyRate: Number(teamForm.hourlyRate),
         estimatedHours: Number(teamForm.estimatedHours),
         totalCost:
@@ -95,12 +118,14 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
 
     setShowAddTeam(false);
     setTeamForm({
+       projectId:'',
       employeeId: '',
       employeeName: '',
       designation: '',
       roleId: '',
       hourlyRate: '',
       estimatedHours: '',
+      projectTeamMemberId:'',
     });
     setErrors({});
   };
@@ -157,7 +182,6 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
                     employeeId: emp.employeeId.toString(),
                     employeeName: emp.employeeName,
                     designation: emp.designation,
-                    roleId: emp.roleId.toString(),
                   });
                 }}
                 className="px-3 py-2 border rounded-lg w-full"
@@ -305,6 +329,6 @@ const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
       )}
     </div>
   );
-};
+}
 
 export default TeamTab;

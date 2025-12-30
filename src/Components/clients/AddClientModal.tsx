@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '../common/Modal';
 import { useDispatch } from 'react-redux';
-import { createClient, updateClient } from '../../redux/slices/clientSlice';
-import type { AppDispatch } from '../../redux/slices/store';
+import { createClient, updateClient } from '../../redux/clientSlice';
+import type { AppDispatch } from '../../redux/store';
 import type { Client } from '../../types/Index';
 import { Switch } from 'antd';
 import toast from 'react-hot-toast';

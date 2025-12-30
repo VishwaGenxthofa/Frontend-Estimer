@@ -56,7 +56,7 @@ const App: React.FC = () => {
 
               {/* Layout */}
               <div className="flex pt-16 h-full">
-                <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-40">
+                <div className="fixed left-0 top-20 h-[calc(100vh-4rem)] z-40">
                   <Sidebar
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}

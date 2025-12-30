@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState, AppDispatch } from '../../redux/slices/store';
-import { fetchClients, deleteClient } from '../../redux/slices/clientSlice';
+import type { RootState, AppDispatch } from '../../redux/store';
+import { fetchClients, deleteClient } from '../../redux/clientSlice';
 import AddClientModal from './AddClientModal';
 
 import {

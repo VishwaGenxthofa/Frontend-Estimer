@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
-import type { Client } from '../../types/Index';
+import api from '../api/axios';
+import type { Client } from '../types/Index';
 import {
   saveClientsToStorage,
   getClientsFromStorage,
   clearClientsStorage,
-} from '../../utils/clientStorage';
+} from '../utils/clientStorage';
 
 interface ClientState {
   clients: Client[];

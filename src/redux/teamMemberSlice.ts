@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
-import type { TeamMember } from '../../types/Index';
+import api from '../api/axios';
+import type { TeamMember } from '../types/Index';
 
 interface TeamMemberState {
   members: TeamMember[];

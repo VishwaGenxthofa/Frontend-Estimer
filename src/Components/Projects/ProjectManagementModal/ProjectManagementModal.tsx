@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../../common/Modal';
 import TeamTab from './TeamTab';
 import MilestonesTab from './MilestonesTab';
-import type { Project, TeamMember, Milestone } from '../../../types';
+import type { Project, TeamMember, Milestone } from '../../../types/Index';
 
 interface ProjectManagementModalProps {
   project: Project;

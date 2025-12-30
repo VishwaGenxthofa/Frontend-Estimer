@@ -22,8 +22,8 @@ interface DashboardProps {
   invoices: Invoice[];
 }
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch,RootState } from '../../redux/slices/store';
-import { fetchProjects } from '../../redux/slices/projectSlice';
+import type { AppDispatch,RootState } from '../../redux/store';
+import { fetchProjects } from '../../redux/projectSlice';
 const Dashboard: React.FC<DashboardProps> = ({
   isAdmin,
   projects,
