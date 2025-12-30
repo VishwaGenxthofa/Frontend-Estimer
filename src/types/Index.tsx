@@ -25,12 +25,16 @@ export interface Project {
   projectName: string;
  projectCode: string;
   projectManagerId: number;
+  companyName:string;
   projectStatusId: number;
+  projectStatus:string
  clientId: number;
  startDate: string;
   plannedEndDate: string;
   paymentTerms: number;
   finalBillingAmount:Number;
+  statusColor:string;
+  projectManager:string;
 }
 export interface ProjectStatus {
   projectStatusId: number;
@@ -42,13 +46,15 @@ export interface ProjectStatus {
 }
 
 export interface TeamMember {
-  team_id: number;
-  project_id: number;
-  employee_name: string;
-  role: string;
-  hourly_rate: string;
-  estimated_hours: string;
-  allocation: number;
+  projectTeamMemberId: number,
+    projectId: number,
+    employeeId: number,
+    employeeName: string,
+    designation: string,
+    roleId: number,
+    hourlyRate: number,
+    estimatedHours:number,
+    totalCost:number
 }
 
 export interface Milestone {
@@ -60,6 +66,7 @@ export interface Milestone {
   milestone_amount: number;
   planned_date: string;
   status: string;
+
 }
 
 export interface Estimate {

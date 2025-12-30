@@ -1,52 +1,134 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, Users } from 'lucide-react';
-import type { TeamMember, Project } from '../../../types';
+import type { Project, TeamMember } from '../../../types/Index';
+import {
+  fetchTeamMembersByProject,
+  createTeamMember,
+  deleteTeamMember,
+} from '../../../redux/slices/teamMemberSlice';
+import { useDispatch,  useSelector } from 'react-redux';
+
+import type { AppDispatch, RootState } from '../../../redux/slices/store';
+
+/* ================= MOCK EMPLOYEES (replace with API later) ================= */
+const employees = [
+  {
+    employeeId: 101,
+    employeeName: 'Rajesh Kumar',
+    designation: 'Senior Developer',
+    roleId: 2,
+  },
+  {
+    employeeId: 102,
+    employeeName: 'Anita Sharma',
+    designation: 'UI Developer',
+    roleId: 3,
+  },
+];
 
 interface TeamTabProps {
   project: Project;
-  teamMembers: TeamMember[];
-  setTeamMembers: React.Dispatch<React.SetStateAction<TeamMember[]>>;
 }
 
-const TeamTab: React.FC<TeamTabProps> = ({ project, teamMembers, setTeamMembers }) => {
+const TeamTab: React.FC<TeamTabProps> = ({ project }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { members, loading } = useSelector( (state:RootState) => state.teamMember);
+
   const [showAddTeam, setShowAddTeam] = useState(false);
+
   const [teamForm, setTeamForm] = useState({
-    employee_name: '',
-    role: '',
-    hourly_rate: '',
-    estimated_hours: '',
-    allocation: 100,
+    employeeId: '',
+    employeeName: '',
+    designation: '',
+    roleId: '',
+    hourlyRate: '',
+    estimatedHours: '',
   });
 
-  const projTeam = teamMembers.filter((tm) => tm.project_id === project.project_id);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleAddTeam = () => {
-    if (!teamForm.employee_name || !teamForm.role) return;
+  /* ================= FETCH TEAM ================= */
+  useEffect(() => {
+    dispatch(fetchTeamMembersByProject(project.projectId));
+  }, [dispatch, project.projectId]);
 
-    setTeamMembers([
-      ...teamMembers,
-      {
-        team_id: Math.max(...teamMembers.map((t) => t.team_id), 0) + 1,
-        project_id: project.project_id,
-        ...teamForm,
-        hourly_rate: teamForm.hourly_rate || '0',
-        estimated_hours: teamForm.estimated_hours || '0',
-        allocation: Number(teamForm.allocation),
-      },
-    ]);
+  const projTeam = members.filter(
+    (tm) => tm.projectId === project.projectId
+  );
 
-    setShowAddTeam(false);
-    setTeamForm({ employee_name: '', role: '', hourly_rate: '', estimated_hours: '', allocation: 100 });
+  /* ================= VALIDATION ================= */
+  const validate = () => {
+    const e: Record<string, string> = {};
+
+    if (!teamForm.employeeId) e.employeeId = 'Employee required';
+    if (!teamForm.hourlyRate) e.hourlyRate = 'Hourly rate required';
+    if (!teamForm.estimatedHours)
+      e.estimatedHours = 'Estimated hours required';
+
+    const exists = projTeam.some(
+      (tm) => tm.employeeId === Number(teamForm.employeeId)
+    );
+    if (exists) e.employeeId = 'Employee already added';
+
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const removeTeamMember = (id: number) => {
+  /* ================= ADD ================= */
+  const handleAddTeam = () => {
+    if (!validate()) return;
+
+    dispatch(
+      createTeamMember({
+        projectId: project.projectId,
+        employeeId: Number(teamForm.employeeId),
+        employeeName: teamForm.employeeName,
+        designation: teamForm.designation,
+        roleId: Number(teamForm.roleId),
+        hourlyRate: Number(teamForm.hourlyRate),
+        estimatedHours: Number(teamForm.estimatedHours),
+        totalCost:
+          Number(teamForm.hourlyRate) *
+          Number(teamForm.estimatedHours),
+      })
+    );
+
+    setShowAddTeam(false);
+    setTeamForm({
+      employeeId: '',
+      employeeName: '',
+      designation: '',
+      roleId: '',
+      hourlyRate: '',
+      estimatedHours: '',
+    });
+    setErrors({});
+  };
+
+  /* ================= DELETE ================= */
+  const removeMember = (id: number) => {
     if (confirm('Remove this team member?')) {
-      setTeamMembers(teamMembers.filter((tm) => tm.team_id !== id));
+      dispatch(deleteTeamMember(id));
     }
   };
 
+  /* ================= PROJECT COST ================= */
+  const projectTotalCost = projTeam.reduce(
+    (sum, m) => sum + m.totalCost,
+    0
+  );
+
   return (
     <div>
+      {/* PROJECT COST */}
+      <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
+        <p className="text-sm text-green-700">Project Team Cost</p>
+        <p className="text-2xl font-bold text-green-800">
+          ₹{projectTotalCost.toLocaleString()}
+        </p>
+      </div>
+
+      {/* ADD BUTTON */}
       <button
         onClick={() => setShowAddTeam(true)}
         className="mb-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -54,96 +136,173 @@ const TeamTab: React.FC<TeamTabProps> = ({ project, teamMembers, setTeamMembers 
         <Plus className="w-4 h-4" /> Add Team Member
       </button>
 
+      {/* ADD FORM */}
       {showAddTeam && (
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
           <h4 className="font-semibold mb-3">Add Team Member</h4>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* EMPLOYEE */}
+            <div>
+              <label className="block text-sm font-medium mb-1">EmployeeName <span className="text-red-500">*</span></label>
+              <select
+                value={teamForm.employeeId}
+                onChange={(e) => {
+                  const emp = employees.find(
+                    (x) => x.employeeId === Number(e.target.value)
+                  );
+                  if (!emp) return;
+                  setTeamForm({
+                    ...teamForm,
+                    employeeId: emp.employeeId.toString(),
+                    employeeName: emp.employeeName,
+                    designation: emp.designation,
+                    roleId: emp.roleId.toString(),
+                  });
+                }}
+                className="px-3 py-2 border rounded-lg w-full"
+              >
+                <option value="">Select Employee</option>
+                {employees.map((e) => (
+                  <option key={e.employeeId} value={e.employeeId}>
+                    {e.employeeName}
+                  </option>
+                ))}
+              </select>
+              {errors.employeeId && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.employeeId}
+                </p>
+              )}
+            </div>
+
+            {/* DESIGNATION */}
+            <div>
+             <label className="block text-sm font-medium mb-1">Designation <span className="text-red-500">*</span></label>
             <input
-              placeholder="Employee Name"
-              value={teamForm.employee_name}
-              onChange={(e) => setTeamForm({ ...teamForm, employee_name: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
+              disabled
+              value={teamForm.designation}
+              placeholder="Designation"
+              className="px-3 py-2 border rounded-lg bg-gray-100 w-full"
             />
-            <input
-              placeholder="Role (e.g., Developer)"
-              value={teamForm.role}
-              onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
-            />
-            <input
-              type="number"
-              placeholder="Hourly Rate (₹)"
-              value={teamForm.hourly_rate}
-              onChange={(e) => setTeamForm({ ...teamForm, hourly_rate: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
-            />
-            <input
-              type="number"
-              placeholder="Estimated Hours"
-              value={teamForm.estimated_hours}
-              onChange={(e) => setTeamForm({ ...teamForm, estimated_hours: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
-            />
-            <input
-              type="number"
-              placeholder="Allocation %"
-              value={teamForm.allocation}
-              onChange={(e) => setTeamForm({ ...teamForm, allocation: Number(e.target.value) })}
-              className="px-3 py-2 border rounded-lg"
-            />
+            </div>
+            {/* RATE */}
+            <div>
+               <label className="block text-sm font-medium mb-1">Hourly Rate <span className="text-red-500">*</span></label>
+              <input
+                type="number"
+                placeholder="Hourly Rate"
+                value={teamForm.hourlyRate}
+                onChange={(e) =>
+                  setTeamForm({
+                    ...teamForm,
+                    hourlyRate: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border rounded-lg w-full"
+              />
+              {errors.hourlyRate && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.hourlyRate}
+                </p>
+              )}
+            </div>
+
+            {/* HOURS */}
+            <div>
+               <label className="block text-sm font-medium mb-1">Hours <span className="text-red-500">*</span></label>
+              <input
+                type="number"
+                placeholder="Estimated Hours"
+                value={teamForm.estimatedHours}
+                onChange={(e) =>
+                  setTeamForm({
+                    ...teamForm,
+                    estimatedHours: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border rounded-lg w-full"
+              />
+              {errors.estimatedHours && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.estimatedHours}
+                </p>
+              )}
+            </div>
           </div>
+
           <div className="flex gap-2 mt-4">
-            <button onClick={handleAddTeam} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <button
+              onClick={handleAddTeam}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
               Add
             </button>
-            <button onClick={() => setShowAddTeam(false)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+            <button
+              onClick={() => setShowAddTeam(false)}
+              className="bg-gray-300 px-4 py-2 rounded"
+            >
               Cancel
             </button>
           </div>
         </div>
       )}
 
-      <div className="space-y-4">
-        {projTeam.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
-            <Users className="w-16 h-16 mx-auto mb-3 opacity-50" />
-            <p>No team members added yet</p>
-          </div>
-        ) : (
-          projTeam.map((tm) => (
-            <div key={tm.team_id} className="bg-white border rounded-lg p-5 shadow-sm">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-lg font-semibold">{tm.employee_name}</h4>
-                  <p className="text-sm text-gray-600">{tm.role}</p>
-                  <div className="grid grid-cols-3 gap-6 mt-3 text-sm">
-                    <div>
-                      <p className="text-gray-600">Hourly Rate</p>
-                      <p className="font-semibold">₹{tm.hourly_rate}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Est. Hours</p>
-                      <p className="font-semibold">{tm.estimated_hours}h</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Total Cost</p>
-                      <p className="font-semibold text-green-600">
-                        ₹{(Number(tm.hourly_rate) * Number(tm.estimated_hours)).toLocaleString()}
-                      </p>
-                    </div>
+      {/* LIST */}
+      {loading ? (
+        <p className="text-gray-500">Loading...</p>
+      ) : projTeam.length === 0 ? (
+        <div className="text-center py-10 text-gray-500">
+          <Users className="w-16 h-16 mx-auto mb-3 opacity-50" />
+          <p>No team members added yet</p>
+        </div>
+      ) : (
+        projTeam.map((tm: TeamMember) => (
+          <div
+            key={tm.projectTeamMemberId}
+            className="bg-white border rounded-lg p-5 shadow-sm mb-3"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="text-lg font-semibold">
+                  {tm.employeeName}
+                </h4>
+                <p className="text-sm text-gray-600">
+                  {tm.designation}
+                </p>
+
+                <div className="grid grid-cols-3 gap-6 mt-3 text-sm">
+                  <div>
+                    <p className="text-gray-600">Rate</p>
+                    <p className="font-semibold">₹{tm.hourlyRate}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Hours</p>
+                    <p className="font-semibold">
+                      {tm.estimatedHours}h
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Cost</p>
+                    <p className="font-semibold text-green-600">
+                      ₹{tm.totalCost.toLocaleString()}
+                    </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => removeTeamMember(tm.team_id)}
-                  className="text-red-600 hover:bg-red-50 p-2 rounded"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
               </div>
+
+              <button
+                onClick={() =>
+                  removeMember(tm.projectTeamMemberId)
+                }
+                className="text-red-600 hover:bg-red-50 p-2 rounded"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
             </div>
-          ))
-        )}
-      </div>
+          </div>
+        ))
+      )}
     </div>
   );
 };

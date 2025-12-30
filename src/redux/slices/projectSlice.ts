@@ -37,10 +37,14 @@ export const fetchProjects = createAsyncThunk<
         clientId: p.clientId,
         projectManagerId: p.projectManagerId,
         projectStatusId: p.projectStatusId,
+        companyName:p.companyName,
+        projectStatus:p.projectStatus,
         startDate: p.startDate,
         plannedEndDate: p.plannedEndDate,
         paymentTerms: p.paymentTerms ?? 0,
         finalBillingAmount: Number(p.finalBillingAmount) || 0,
+        statusColor:p.statusColor,
+        projectManager:p.projectManager,
       }));
     } catch (err: any) {
       return rejectWithValue(

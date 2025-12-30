@@ -26,7 +26,7 @@ const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
   const [activeTab, setActiveTab] = useState<'team' | 'milestones'>('team');
 
   return (
-    <Modal onClose={onClose} title={`Manage Project - ${project.project_name}`} wide>
+    <Modal onClose={onClose} title={`Manage Project - ${project.projectName}`} wide>
       <div className="border-b mb-6">
         <div className="flex gap-8">
           <button
@@ -37,7 +37,7 @@ const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Team Members ({teamMembers.filter((t) => t.project_id === project.project_id).length})
+            Team Members ({teamMembers.filter((t) => t.projectId === project.projectId).length})
           </button>
           <button
             onClick={() => setActiveTab('milestones')}
@@ -47,7 +47,7 @@ const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Milestones ({milestones.filter((m) => m.project_id === project.project_id).length})
+            Milestones ({milestones.filter((m) => m.project_id === project.projectId).length})
           </button>
         </div>
       </div>

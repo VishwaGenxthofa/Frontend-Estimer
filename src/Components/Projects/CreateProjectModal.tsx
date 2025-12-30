@@ -68,6 +68,10 @@ const validateForm = () => {
     plannedEndDate: '',
     paymentTerms: 30,
      finalBillingAmount:0,
+      companyName:'',
+       projectStatus:'',
+       statusColor:'',
+       projectManager:'',
   });
 
   
@@ -88,13 +92,17 @@ const handleSubmit = async () => {
     plannedEndDate: form.plannedEndDate,
     paymentTerms: Number(form.paymentTerms),
     finalBillingAmount: Number(form.finalBillingAmount) || 0,
+    companyName:form.companyName,
+     projectStatus:form.projectStatus,
+     statusColor:form.statusColor,
+     projectManager:form. projectManager,
   };
 
   try {
     const action = await dispatch(createProject(payload));
 
     if (createProject.fulfilled.match(action)) {
-      toast.success("Project created successfully ✅");
+      toast.success("Project created successfully ");
 
       setForm({
         projectName: "",
@@ -106,6 +114,10 @@ const handleSubmit = async () => {
         plannedEndDate: "",
         paymentTerms: 30,
         finalBillingAmount: 0,
+         companyName:"",
+          projectStatus:"",
+          statusColor:"",
+          projectManager:"",
       });
 
       setErrors({});
@@ -140,9 +152,9 @@ const [newStatus, setNewStatus] = useState({
   // ]);
 
   const [projectManagers] = useState([
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' },
-    { id: 3, name: 'Mike Johnson' }
+    { id: 1, name: 'Rajiv sir' },
+     { id: 2, name: 'Akila' },
+    // { id: 3, name: 'Mike Johnson' }
   ]);
 
   // const [projectStatuses, setProjectStatuses] = useState([
