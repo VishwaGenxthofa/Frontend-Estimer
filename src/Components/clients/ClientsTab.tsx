@@ -35,8 +35,6 @@ const ClientsTab: React.FC = () => {
   useEffect(() => {
     dispatch(fetchClients({ page: 2, pageSize: 20 }));
   }, [dispatch]);
-
-  
   const handleDelete = (id: number) => {
     Modal.confirm({
       title: 'Delete Client',

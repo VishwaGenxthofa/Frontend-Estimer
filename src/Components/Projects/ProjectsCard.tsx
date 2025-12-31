@@ -163,7 +163,7 @@ const teamCount = projTeam.length;
               </div>
             </div>
             <h1 className="text-[42px] font-bold text-white tracking-tight leading-none">
-               {project.companyName}
+               {project.projectName}
             </h1>
           </div>
         </div>

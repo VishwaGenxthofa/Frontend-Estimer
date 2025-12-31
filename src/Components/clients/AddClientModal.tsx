@@ -74,7 +74,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         stateProvince: editingClient.stateProvince,
        postalCode:editingClient.postalCode,
         country:editingClient.country,
-        isActive: editingClient.isActive,
+        isActive: editingClient ? editingClient.isActive : true,
       });
     }
   }, [editingClient]);
@@ -398,12 +398,23 @@ if (!form.country)  newErrors.country = 'Country is required';
         {/* STATUS */}
         <div>
           <label className="block text-sm font-medium mb-2">Status</label>
-          <Switch
-            checked={form.isActive}
-            onChange={() => setForm({ ...form, isActive: true })}
-            checkedChildren="Active"
-            style={{ backgroundColor: 'green' }}
-          />
+                <Switch
+        checked={form.isActive}
+        onChange={() => {
+          if (editingClient) {
+            setForm({ ...form, isActive: !form.isActive });
+          }
+        }}
+        disabled={!editingClient}   
+        checkedChildren="Active"
+        unCheckedChildren="Inactive"
+        style={{
+          backgroundColor: form.isActive ? 'green' : 'red',
+          cursor: editingClient ? 'pointer' : 'not-allowed',
+        }}
+      />
+
+
         </div>
 
         {/* ACTIONS */}
