@@ -58,7 +58,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
         {projects.map((proj) => {
           const client = clients.find((c) => c.clientId === proj.clientId);
           const teamCount = teamMembers.filter((tm) => tm.projectId === proj.projectId).length;
-          const milestoneCount = milestones.filter((m) => m.project_id === proj.projectId).length;
+          const milestoneCount = milestones.filter((m) => m.ProjectId === proj.projectId).length;
 
           return (
             <ProjectCard

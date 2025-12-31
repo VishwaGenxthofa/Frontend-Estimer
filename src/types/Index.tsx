@@ -51,21 +51,21 @@ export interface TeamMember {
     employeeId: number,
     employeeName: string,
     designation: string,
-    roleId: number,
     hourlyRate: number,
     estimatedHours:number,
     totalCost:number
 }
 
 export interface Milestone {
-  milestone_id: number;
-  project_id: number;
-  milestone_name: string;
-  description: string;
-  payment_percentage: number;
-  milestone_amount: number;
-  planned_date: string;
+ ProjectMilestoneId: number;
+  ProjectId: number;
+ MilestoneName: string;
+  Description: string;
+  PaymentPercentage: number;
+  MilestoneAmount: number;
+  DueDate: string;
   status: string;
+  MilestoneStatusId:number;
 
 }
 
