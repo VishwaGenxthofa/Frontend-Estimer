@@ -1,43 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../../common/Modal';
 import TeamTab from './TeamTab';
 import MilestonesTab from './MilestonesTab';
 import type { Project, TeamMember, Milestone } from '../../../types/Index';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../../redux/store';
+import { fetchTeamMembersByProject } from '../../../redux/teamMemberSlice';
+import { fetchMilestonesByProject } from '../../../redux/milestoneSlice';
 
 interface ProjectManagementModalProps {
   project: Project;
-  teamMembers: TeamMember[];
-  setTeamMembers: React.Dispatch<React.SetStateAction<TeamMember[]>>;
-  milestones: Milestone[];
-  setMilestones: React.Dispatch<React.SetStateAction<Milestone[]>>;
   onClose: () => void;
   isAdmin: boolean;
 }
 
 const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
   project,
-  teamMembers,
-  setTeamMembers,
-  milestones,
-  setMilestones,
   onClose,
   isAdmin,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { members } = useSelector((state: RootState) => state.teamMember);
+  const { milestones } = useSelector((state: RootState) => state.milestone);
+
   const [activeTab, setActiveTab] = useState<'team' | 'milestones'>('team');
 
-  // ✅ safe projectId
-  const projectId = project.projectId;
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [projectMilestones, setProjectMilestones] = useState<Milestone[]>([]);
+
+  /* ================= FETCH DATA WHEN MODAL OPENS ================= */
+  useEffect(() => {
+    if (!project?.projectId) return;
+
+    dispatch(fetchTeamMembersByProject(project.projectId));
+    dispatch(fetchMilestonesByProject(project.projectId));
+  }, [dispatch, project?.projectId]);
+
+  /* ================= UPDATE LOCAL STATE WHEN REDUX CHANGES ================= */
+  useEffect(() => {
+    if (!project?.projectId) return;
+
+    const projTeam = members.filter((m) => m.projectId === project.projectId);
+    setTeamMembers(projTeam);
+  }, [members, project.projectId]);
+
+  useEffect(() => {
+    if (!project?.projectId) return;
+
+    const projMile = milestones.filter((m) => m.ProjectId === project.projectId);
+    setProjectMilestones(projMile);
+  }, [milestones, project.projectId]);
 
   return (
-    <Modal
-      onClose={onClose}
-      title={`Manage Project - ${project.projectName}`}
-      wide
-    >
-      {/* ---------- Tabs Header ---------- */}
+    <Modal onClose={onClose} title={`Manage Project - ${project.projectName}`} wide>
+      {/* TAB BUTTONS */}
       <div className="border-b mb-6">
         <div className="flex gap-8">
-          {/* TEAM TAB */}
           <button
             onClick={() => setActiveTab('team')}
             className={`pb-3 px-1 border-b-2 font-medium transition-colors ${
@@ -46,14 +64,8 @@ const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Team Members (
-            {teamMembers.filter(
-              (t) => t.projectId === projectId
-            ).length}
-            )
+            Team Members ({teamMembers.length})
           </button>
-
-          {/* MILESTONE TAB */}
           <button
             onClick={() => setActiveTab('milestones')}
             className={`pb-3 px-1 border-b-2 font-medium transition-colors ${
@@ -62,31 +74,21 @@ const ProjectManagementModal: React.FC<ProjectManagementModalProps> = ({
                 : 'border-transparent text-gray-600 hover:text-gray-900'
             }`}
           >
-            Milestones (
-            {milestones.filter(
-              (m) => m.ProjectId === projectId   // ✅ FIXED (not ProjectId)
-            ).length}
-            )
+            Milestones ({projectMilestones.length})
           </button>
         </div>
       </div>
 
-      {/* ---------- Tab Content ---------- */}
+      {/* TABS CONTENT */}
       {activeTab === 'team' && (
-        <TeamTab
-          project={project}
-          teamMembers={teamMembers}
-          setTeamMembers={setTeamMembers}
-          isAdmin={isAdmin}
-        />
+        <TeamTab project={project} teamMembers={teamMembers} setTeamMembers={setTeamMembers} />
       )}
 
       {activeTab === 'milestones' && (
         <MilestonesTab
           project={project}
-          milestones={milestones}
-          setMilestones={setMilestones}
-          isAdmin={isAdmin}
+          milestones={projectMilestones}
+          setMilestones={setProjectMilestones}
         />
       )}
     </Modal>
