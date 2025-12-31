@@ -138,10 +138,10 @@ const teamCount = projTeam.length;
           </div>
         </div>
       </div> */}
-   
+        <Toaster position="top-right" />
       <div className="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
         {/* Card Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-8 pt-8 pb-20 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-8 pt-8 pb-8 relative overflow-hidden">
           {/* Decorative Circle */}
           <div className="absolute -top-1/2 -right-[10%] w-72 h-72 bg-white/5 rounded-full"></div>
           

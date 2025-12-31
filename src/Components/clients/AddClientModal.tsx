@@ -221,40 +221,45 @@ if (!form.country)  newErrors.country = 'Country is required';
       <label className="block text-sm font-medium mb-1">
         Phone <span className="text-red-500">*</span>
       </label>
-<PhoneInput
-  country="in"
-  value={form.phone}
-  onChange={(value, country) => {
-    const digits = value.replace(/\D/g, '');
-    let cleanPhone = digits;
+      <PhoneInput
+        country="in"
+        value={form.phone}
+        onChange={(value, country) => {
+          // remove +, space, symbols
+          let digits = value.replace(/\D/g, '');
 
-    // ✅ TYPE GUARD
-    if (
-      country &&
-      typeof country === 'object' &&
-      'countryCode' in country &&
-      country.countryCode === 'in' &&
-      digits.startsWith('91')
-    ) {
-      cleanPhone = digits.slice(2);
-    }
+          // remove India country code 91
+          if (
+            country &&
+            typeof country === 'object' &&
+            'countryCode' in country &&
+            country.countryCode === 'in' &&
+            digits.startsWith('91')
+          ) {
+            digits = digits.slice(2);
+          }
 
-    setForm({
-      ...form,
-      phone: cleanPhone, // ✅ ONLY 10 digits
-    });
+          // allow ONLY 10 digits
+          digits = digits.slice(0, 10);
 
-    setErrors({ ...errors, phone: '' });
-  }}
-  enableSearch
-  inputProps={{ required: true }}
-  inputClass="!w-full !h-10"
-  inputStyle={{
-    width: '100%',
-    borderRadius: '0.5rem',
-    borderColor: errors.phone ? '#ef4444' : '#d1d5db',
-  }}
-/>
+          setForm({
+            ...form,
+            phone: digits,
+          });
+
+          setErrors({ ...errors, phone: '' });
+        }}
+        enableSearch
+        inputProps={{
+          required: true,
+        }}
+        inputClass="!w-full !h-10"
+        inputStyle={{
+          width: '100%',
+          borderRadius: '0.5rem',
+          borderColor: errors.phone ? '#ef4444' : '#d1d5db',
+        }}
+      />
 
 
 
