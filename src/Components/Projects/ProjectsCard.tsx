@@ -38,9 +38,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     dispatch(fetchTeamMembersByProject(project.projectId));
   }, [dispatch, project.projectId]);
   
-  
-  console.log(project.statusColor);
-const teamCount = members.length;
+const projTeam = Array.isArray(members) ? members : [];
+const teamCount = projTeam.length;
   return (
     // <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
     //   <div className="flex justify-between items-start mb-4">
@@ -241,7 +240,7 @@ const teamCount = members.length;
             </div>
           </div>
           {/* Action Button */}
-          <button   onClick={onManage} className="w-full bg-gradient-to-br from-slate-900 to-blue-900 text-white py-4 px-6 rounded-lg text-[15px] font-bold uppercase tracking-[0.1em] relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-900/30 group">
+          <button   onClick={onManage} className="w-full bg-gradient-to-br from-slate-900 to-blue-900 text-white py-4 px-6 rounded-lg text-[15px] font-bold uppercase tracking-[0.1em] relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5  ">
             <div className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-150 transition-transform duration-500 origin-center"></div>
             <span className="relative z-10">Manage Project</span>
           </button>
