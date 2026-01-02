@@ -1,10 +1,9 @@
-// src/types/index.ts
 export interface User {
   email: string;
   role: 'Admin' | 'Client';
  
 }
-
+ 
 export interface Client {
   clientId: number;
   companyName: string;
@@ -19,7 +18,7 @@ export interface Client {
   country: string;
   isActive:boolean;
 }
-
+ 
 export interface Project {
   projectId?: number;
   projectName: string;
@@ -44,31 +43,32 @@ export interface ProjectStatus {
   statusColor: string;
   isActive: boolean;
 }
-
+ 
 export interface TeamMember {
-  projectTeamMemberId: number,
-    projectId: number,
-    employeeId: number,
-    employeeName: string,
-    designation: string,
-    hourlyRate: number,
-    estimatedHours:number,
-    totalCost:number
+  projectTeamMemberId: number;
+    projectId: number;
+    employeeId: number;
+    employeeName: string;
+    designation: string;
+    hourlyRate: number;
+    estimatedHours:number;
+    totalCost:number;
 }
-
+ 
 export interface Milestone {
  ProjectMilestoneId: number;
   ProjectId: number;
- MilestoneName: string;
-  Description: string;
-  PaymentPercentage: number;
-  MilestoneAmount: number;
-  DueDate: string;
-  status: string;
-  MilestoneStatusId:number;
-
+ milestoneName: string;
+  description: string;
+  paymentPercentage: number;
+  milestoneAmount: number;
+  dueDate: string;
+  mileStoneStatusName: string;
+  milestoneStatusId:number;
+  statusColor:string;
+ 
 }
-
+ 
 export interface Estimate {
   estimation_id: number;
   project_id: number;
@@ -90,7 +90,7 @@ export interface Estimate {
   final: number;
   change_comment?: string;
 }
-
+ 
 export interface Invoice {
   invoice_id: number;
   invoice_number: string;
@@ -108,7 +108,7 @@ export interface Invoice {
   balance: number;
   status: 'Unpaid' | 'Partially Paid' | 'Paid';
 }
-
+ 
 export interface Payment {
   payment_id: number;
   invoice_id: number;
@@ -116,4 +116,19 @@ export interface Payment {
   payment_date: string;
   payment_mode: string;
   reference: string;
+}
+export interface Employee {
+  employeeId: number;
+  employeeName: string;
+  designation: string;
+  hourlyRate: number;
+  email: string;
+  phone: string;
+  department: string;
+  isActive: boolean;
+  joinDate: string;
+  skills: string[];
+  createdAt: string;
+  updatedAt: string;
+  id: string;
 }

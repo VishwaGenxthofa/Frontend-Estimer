@@ -1,6 +1,6 @@
 // redux/slices/projectSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../api/axios';
+import api from '../api/projectapi';
 import type { Project } from '../types/Index';
 
 interface ProjectState {
@@ -25,11 +25,12 @@ export const fetchProjects = createAsyncThunk<
   async ({ page = 1, pageSize = 10 }, { rejectWithValue }) => {
     try {
       const response = await api.get(
-        `/Project?page=${page}&pageSize=${pageSize}`
+        `/projects`
       );
 
-      const projects = response.data?.data?.data ?? [];
-      console.table("project",projects)
+      const projects = response.data;
+
+      console.table("project vsihwa",projects)
       return projects.map((p: any): Project => ({
         projectId: p.projectId,
         projectName: p.projectName ?? '',
@@ -59,8 +60,8 @@ export const createProject = createAsyncThunk(
   'project/create',
   async (payload: Project, { rejectWithValue }) => {
     try {
-      const res = await api.post('/Project', payload);
-      return res.data?.data;
+      const res = await api.post('/project', payload);
+      return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Create project failed');
     }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Eye, Check, XCircle, RefreshCw } from 'lucide-react';
 import CreateEstimateModal from './CreateEstimateModal';
 import EstimateDetailsModal from './EstimateDetailsModal';
-import type { Estimate, Project, Client } from '../../types';
+import type { Estimate, Project, Client } from '../../types/Index';
 
 interface EstimatesTabProps {
   estimates: Estimate[];
@@ -67,15 +67,15 @@ const EstimatesTab: React.FC<EstimatesTabProps> = ({
           </div>
         ) : (
           estimates.map((est) => {
-            const proj = projects.find(p => p.project_id === est.project_id);
-            const client = clients.find(c => c.client_id === parseInt(proj?.client_id || ''));
+            const proj = projects.find(p => p.projectId === est.project_id);
+            const client = clients.find(c => c.clientId === parseInt(proj?.clientId || ''));
 
             return (
               <div key={est.estimation_id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold">{proj?.project_name || 'Unknown Project'}</h3>
-                    <p className="text-sm text-gray-600">Client: {client?.client_name || 'N/A'}</p>
+                    <h3 className="text-lg font-semibold">{proj?.projectName || 'Unknown Project'}</h3>
+                    <p className="text-sm text-gray-600">Client: {client?.companyName || 'N/A'}</p>
                     <p className="text-xs text-gray-500">Version {est.version}</p>
                     {est.change_comment && (
                       <div className="mt-3 bg-orange-50 border-l-4 border-orange-500 p-3 rounded">

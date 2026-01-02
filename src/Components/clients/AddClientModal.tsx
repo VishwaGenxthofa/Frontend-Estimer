@@ -6,7 +6,7 @@ import type { AppDispatch } from '../../redux/store';
 import type { Client } from '../../types/Index';
 import { Switch } from 'antd';
 import toast from 'react-hot-toast';
-import ReactCountryFlag from "react-country-flag";
+import { Country, State, City } from 'country-state-city';
 
 /* ===================== TYPES ===================== */
 interface Errors {
@@ -27,45 +27,45 @@ interface AddClientModalProps {
   refreshClients: () => void;
 }
 
-/* ===================== COUNTRY DATA ===================== */
-const COUNTRIES = [
-  { name: 'India', code: 'IN', dialCode: '+91', placeholder: '9876543210' },
-  { name: 'USA', code: 'US', dialCode: '+1', placeholder: '2025551234' },
-  { name: 'United Kingdom', code: 'GB', dialCode: '+44', placeholder: '7912345678' },
-  { name: 'China', code: 'CN', dialCode: '+86', placeholder: '13812345678' },
-  { name: 'Canada', code: 'CA', dialCode: '+1', placeholder: '4165551234' },
-  { name: 'Australia', code: 'AU', dialCode: '+61', placeholder: '412345678' },
-  { name: 'Germany', code: 'DE', dialCode: '+49', placeholder: '15112345678' },
-  { name: 'France', code: 'FR', dialCode: '+33', placeholder: '612345678' },
-  { name: 'Japan', code: 'JP', dialCode: '+81', placeholder: '9012345678' },
-  { name: 'Singapore', code: 'SG', dialCode: '+65', placeholder: '81234567' },
-  { name: 'Malaysia', code: 'MY', dialCode: '+60', placeholder: '123456789' },
-  { name: 'Thailand', code: 'TH', dialCode: '+66', placeholder: '812345678' },
-  { name: 'Indonesia', code: 'ID', dialCode: '+62', placeholder: '812345678' },
-  { name: 'Philippines', code: 'PH', dialCode: '+63', placeholder: '9123456789' },
-  { name: 'Vietnam', code: 'VN', dialCode: '+84', placeholder: '912345678' },
-  { name: 'United Arab Emirates', code: 'AE', dialCode: '+971', placeholder: '501234567' },
-  { name: 'Saudi Arabia', code: 'SA', dialCode: '+966', placeholder: '501234567' },
-  { name: 'Brazil', code: 'BR', dialCode: '+55', placeholder: '11912345678' },
-  { name: 'Mexico', code: 'MX', dialCode: '+52', placeholder: '5512345678' },
-  { name: 'Spain', code: 'ES', dialCode: '+34', placeholder: '612345678' },
-  { name: 'Italy', code: 'IT', dialCode: '+39', placeholder: '3123456789' },
-  { name: 'Netherlands', code: 'NL', dialCode: '+31', placeholder: '612345678' },
-  { name: 'Belgium', code: 'BE', dialCode: '+32', placeholder: '470123456' },
-  { name: 'Switzerland', code: 'CH', dialCode: '+41', placeholder: '781234567' },
-  { name: 'Sweden', code: 'SE', dialCode: '+46', placeholder: '701234567' },
-  { name: 'Norway', code: 'NO', dialCode: '+47', placeholder: '41234567' },
-  { name: 'Denmark', code: 'DK', dialCode: '+45', placeholder: '20123456' },
-  { name: 'Poland', code: 'PL', dialCode: '+48', placeholder: '512345678' },
-  { name: 'Russia', code: 'RU', dialCode: '+7', placeholder: '9123456789' },
-  { name: 'South Africa', code: 'ZA', dialCode: '+27', placeholder: '821234567' },
-  { name: 'New Zealand', code: 'NZ', dialCode: '+64', placeholder: '211234567' },
-  { name: 'Ireland', code: 'IE', dialCode: '+353', placeholder: '851234567' },
-  { name: 'Pakistan', code: 'PK', dialCode: '+92', placeholder: '3001234567' },
-  { name: 'Bangladesh', code: 'BD', dialCode: '+880', placeholder: '1712345678' },
-  { name: 'Sri Lanka', code: 'LK', dialCode: '+94', placeholder: '712345678' },
-  { name: 'Nepal', code: 'NP', dialCode: '+977', placeholder: '9841234567' },
-].sort((a, b) => a.name.localeCompare(b.name));
+/* ===================== DIAL CODES ===================== */
+const DIAL_CODES: { [key: string]: string } = {
+  IN: '+91',
+  US: '+1',
+  GB: '+44',
+  CN: '+86',
+  CA: '+1',
+  AU: '+61',
+  DE: '+49',
+  FR: '+33',
+  JP: '+81',
+  SG: '+65',
+  MY: '+60',
+  TH: '+66',
+  ID: '+62',
+  PH: '+63',
+  VN: '+84',
+  AE: '+971',
+  SA: '+966',
+  BR: '+55',
+  MX: '+52',
+  ES: '+34',
+  IT: '+39',
+  NL: '+31',
+  BE: '+32',
+  CH: '+41',
+  SE: '+46',
+  NO: '+47',
+  DK: '+45',
+  PL: '+48',
+  RU: '+7',
+  ZA: '+27',
+  NZ: '+64',
+  IE: '+353',
+  PK: '+92',
+  BD: '+880',
+  LK: '+94',
+  NP: '+977',
+};
 
 /* ===================== COMPONENT ===================== */
 const AddClientModal: React.FC<AddClientModalProps> = ({
@@ -90,8 +90,14 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Errors>({});
-  const [selectedCountry, setSelectedCountry] = useState<typeof COUNTRIES[0] | null>(null);
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('');
+  const [availableStates, setAvailableStates] = useState<any[]>([]);
+  const [availableCities, setAvailableCities] = useState<any[]>([]);
 
+  // Get all countries
+  const allCountries = Country.getAllCountries();
+
+  /* ===================== EDIT MODE ===================== */
   useEffect(() => {
     if (editingClient) {
       setForm({
@@ -108,15 +114,24 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         isActive: editingClient.isActive,
       });
 
-      const country = COUNTRIES.find(
-        (c) => c.name.toLowerCase() === editingClient.country.toLowerCase()
-      );
+      // Find country and set states
+      const country = allCountries.find((c) => c.name === editingClient.country);
       if (country) {
-        setSelectedCountry(country);
+        setSelectedCountryCode(country.isoCode);
+        const states = State.getStatesOfCountry(country.isoCode);
+        setAvailableStates(states);
+
+        // Load cities if state exists
+        const state = states.find((s) => s.name === editingClient.stateProvince);
+        if (state) {
+          const cities = City.getCitiesOfState(country.isoCode, state.isoCode);
+          setAvailableCities(cities);
+        }
       }
     }
   }, [editingClient]);
 
+  /* ===================== VALIDATION ===================== */
   const validate = (): boolean => {
     const newErrors: Errors = {};
 
@@ -152,26 +167,51 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  /* ===================== HANDLE COUNTRY CHANGE ===================== */
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const countryName = e.target.value;
-    const country = COUNTRIES.find((c) => c.name === countryName);
+    const countryCode = e.target.value;
+    const country = allCountries.find((c) => c.isoCode === countryCode);
 
-    setForm({ ...form, country: countryName, phone: '' });
-    setErrors({ ...errors, country: '', phone: '' });
-    setSelectedCountry(country || null);
+    if (country) {
+      setForm({
+        ...form,
+        country: country.name,
+        phone: '',
+        stateProvince: '',
+        city: '',
+      });
+      setErrors({ ...errors, country: '', phone: '', stateProvince: '', city: '' });
+      setSelectedCountryCode(countryCode);
+
+      // Load states for selected country
+      const states = State.getStatesOfCountry(countryCode);
+      setAvailableStates(states);
+      setAvailableCities([]); // Reset cities
+    }
   };
 
+  /* ===================== HANDLE STATE CHANGE ===================== */
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const stateName = e.target.value;
+    setForm({ ...form, stateProvince: stateName, city: '' });
+    setErrors({ ...errors, stateProvince: '', city: '' });
+
+    // Load cities for selected state
+    const state = availableStates.find((s) => s.name === stateName);
+    if (state) {
+      const cities = City.getCitiesOfState(selectedCountryCode, state.isoCode);
+      setAvailableCities(cities);
+    }
+  };
+
+  /* ===================== HANDLE PHONE CHANGE ===================== */
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
-
-    setForm({
-      ...form,
-      phone: value,
-    });
-
+    setForm({ ...form, phone: value });
     setErrors({ ...errors, phone: '' });
   };
 
+  /* ===================== SUBMIT ===================== */
   const handleSubmit = async () => {
     if (!validate()) return;
 
@@ -193,9 +233,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         const backendErrors: Errors = {};
 
         Object.keys(err.errors).forEach((key) => {
-          const frontendKey =
-            key.charAt(0).toLowerCase() + key.slice(1);
-
+          const frontendKey = key.charAt(0).toLowerCase() + key.slice(1);
           const messages = err.errors[key];
           if (Array.isArray(messages) && messages.length > 0) {
             backendErrors[frontendKey as keyof Errors] = messages[0];
@@ -211,12 +249,10 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
     }
   };
 
+  /* ===================== UI ===================== */
   return (
-    <Modal
-      onClose={onClose}
-      title={editingClient ? 'Edit Client' : 'Add New Client'}
-    >
-      <div className="space-y-5">
+    <Modal onClose={onClose} title={editingClient ? 'Edit Client' : 'Add New Client'}>
+      <div className="space-y-5 overflow-hidden">
         {/* COMPANY NAME */}
         <div>
           <label className="block text-sm font-medium mb-1">
@@ -253,9 +289,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
             }`}
           />
           {errors.companyContactPerson && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors.companyContactPerson}
-            </p>
+            <p className="text-sm text-red-500 mt-1">{errors.companyContactPerson}</p>
           )}
         </div>
 
@@ -275,9 +309,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
           />
-          {errors.email && (
-            <p className="text-sm text-red-500 mt-1">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
         </div>
 
         {/* COUNTRY */}
@@ -286,50 +318,45 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
             Country <span className="text-red-500">*</span>
           </label>
           <select
-            value={form.country}
+            value={selectedCountryCode}
             onChange={handleCountryChange}
             className={`w-full px-4 py-2 rounded-lg border bg-white ${
               errors.country ? 'border-red-500' : 'border-gray-300'
             }`}
           >
             <option value="">Select Country</option>
-            {COUNTRIES.map((country) => (
-              <option key={country.code} value={country.name}>
-                {country.name} ({country.dialCode})
+            {allCountries.map((country) => (
+              <option key={country.isoCode} value={country.isoCode}>
+                {country.flag} {country.name} ({DIAL_CODES[country.isoCode] || country.phonecode})
               </option>
             ))}
           </select>
-          {errors.country && (
-            <p className="text-sm text-red-500 mt-1">{errors.country}</p>
-          )}
+          {errors.country && <p className="text-sm text-red-500 mt-1">{errors.country}</p>}
         </div>
 
-        {/* PHONE - WITH FLAG ICON */}
+        {/* PHONE */}
         <div>
           <label className="block text-sm font-medium mb-1">
             Phone <span className="text-red-500">*</span>
           </label>
-          {form.country && selectedCountry ? (
+          {form.country && selectedCountryCode ? (
             <>
-              <div className={`flex items-center w-full rounded-lg border ${
-                errors.phone ? 'border-red-500' : 'border-gray-300'
-              }`}>
-                {/* Flag and Country Code Section */}
+              <div
+                className={`flex items-center w-full rounded-lg border ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
+              >
+                {/* Flag and Dial Code */}
                 <div className="flex items-center gap-2 px-3 py-2.5 bg-white border-r border-gray-300">
-                  <ReactCountryFlag
-                    countryCode={selectedCountry.code}
-                    svg
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                    }}
-                    title={selectedCountry.name}
-                  />
+                  <span className="text-2xl leading-none">
+                    {allCountries.find((c) => c.isoCode === selectedCountryCode)?.flag}
+                  </span>
                   <span className="text-gray-700 font-medium whitespace-nowrap text-sm">
-                    {selectedCountry.code}
+                    {selectedCountryCode}
                   </span>
                   <span className="text-gray-700 font-medium whitespace-nowrap">
-                    {selectedCountry.dialCode}
+                    {DIAL_CODES[selectedCountryCode] ||
+                      allCountries.find((c) => c.isoCode === selectedCountryCode)?.phonecode}
                   </span>
                 </div>
 
@@ -338,22 +365,18 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
                   type="tel"
                   value={form.phone}
                   onChange={handlePhoneChange}
-                  placeholder={selectedCountry.placeholder}
+                  placeholder="Enter phone number"
                   className="flex-1 px-3 py-2.5 outline-none rounded-r-lg"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Enter only digits (e.g., {selectedCountry.placeholder})
-              </p>
+              <p className="text-xs text-gray-500 mt-1">Enter only digits</p>
             </>
           ) : (
             <div className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 text-gray-500">
               Please select a country first
             </div>
           )}
-          {errors.phone && (
-            <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
-          )}
+          {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
         </div>
 
         {/* ADDRESS LINE 1 */}
@@ -378,58 +401,69 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
 
         {/* ADDRESS LINE 2 */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Address Line 2
-          </label>
+          <label className="block text-sm font-medium mb-1">Address Line 2</label>
           <input
             value={form.addressLine2}
-            onChange={(e) => {
-              setForm({ ...form, addressLine2: e.target.value });
-            }}
+            onChange={(e) => setForm({ ...form, addressLine2: e.target.value })}
             className="w-full px-4 py-2 rounded-lg border border-gray-300"
           />
         </div>
 
-        {/* CITY & STATE */}
+        {/* STATE & CITY */}
         <div className="flex w-full gap-4 justify-between">
+          {/* STATE DROPDOWN */}
+          <div className="w-full">
+            <label className="block text-sm font-medium mb-1">
+              State / Province <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={form.stateProvince}
+              onChange={handleStateChange}
+              disabled={!selectedCountryCode}
+              className={`w-full px-4 py-2 rounded-lg border bg-white ${
+                errors.stateProvince ? 'border-red-500' : 'border-gray-300'
+              } ${!selectedCountryCode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {selectedCountryCode ? 'Select State' : 'Select Country First'}
+              </option>
+              {availableStates.map((state) => (
+                <option key={state.isoCode} value={state.name}>
+                  {state.name}
+                </option>
+              ))}
+            </select>
+            {errors.stateProvince && (
+              <p className="text-sm text-red-500 mt-1">{errors.stateProvince}</p>
+            )}
+          </div>
+
+          {/* CITY DROPDOWN */}
           <div className="w-full">
             <label className="block text-sm font-medium mb-1">
               City <span className="text-red-500">*</span>
             </label>
-            <input
+            <select
               value={form.city}
               onChange={(e) => {
                 setForm({ ...form, city: e.target.value });
                 setErrors({ ...errors, city: '' });
               }}
-              className={`w-full px-4 py-2 rounded-lg border ${
+              disabled={!form.stateProvince}
+              className={`w-full px-4 py-2 rounded-lg border bg-white ${
                 errors.city ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.city && (
-              <p className="text-sm text-red-500 mt-1">{errors.city}</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <label className="block text-sm font-medium mb-1">
-              State / Province <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={form.stateProvince}
-              onChange={(e) => {
-                setForm({ ...form, stateProvince: e.target.value });
-                setErrors({ ...errors, stateProvince: '' });
-              }}
-              className={`w-full px-4 py-2 rounded-lg border ${
-                errors.stateProvince ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.stateProvince && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.stateProvince}
-              </p>
-            )}
+              } ${!form.stateProvince ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {form.stateProvince ? 'Select City' : 'Select State First'}
+              </option>
+              {availableCities.map((city) => (
+                <option key={city.name} value={city.name}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            {errors.city && <p className="text-sm text-red-500 mt-1">{errors.city}</p>}
           </div>
         </div>
 
@@ -481,10 +515,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
           >
             {editingClient ? 'Update Client' : 'Add Client'}
           </button>
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-200 py-3 rounded-lg hover:bg-gray-300"
-          >
+          <button onClick={onClose} className="flex-1 bg-gray-200 py-3 rounded-lg hover:bg-gray-300">
             Cancel
           </button>
         </div>
@@ -494,4 +525,3 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
 };
 
 export default AddClientModal;
- 

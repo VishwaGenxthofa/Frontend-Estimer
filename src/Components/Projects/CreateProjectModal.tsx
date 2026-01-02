@@ -10,6 +10,7 @@ import {
   createProjectStatus,
   deleteProjectStatus,
 } from '../../redux/projectStatusSlice';
+import { fetchEmployees } from '../../redux/employeesSlice';
 import { createProject} from '../../redux/projectSlice';
 interface CreateProjectModalProps {
   onClose: () => void;
@@ -26,7 +27,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 }) => {
   const [showAddStatus, setShowAddStatus] = useState(false);
    const dispatch = useDispatch<AppDispatch>();
-
+  
 const { statuses, loading } = useSelector(
   (state: RootState) => state.projectStatus);
 const [errors, setErrors] = useState<{
@@ -142,7 +143,7 @@ const [newStatus, setNewStatus] = useState({
   });
  useEffect(() => {
     dispatch(fetchProjectStatuses());
-   
+     dispatch(fetchEmployees());
   },[dispatch])
   // Mock data
   // const [clients] = useState([
@@ -151,12 +152,12 @@ const [newStatus, setNewStatus] = useState({
   //   { id: 3, name: 'Global Industries' }
   // ]);
 
-  const [projectManagers] = useState([
-    { id: 1, name: 'Rajiv sir' },
-     { id: 2, name: 'Akila' },
-    // { id: 3, name: 'Mike Johnson' }
-  ]);
-
+  
+ const selectProjectManagers = (state: RootState) =>
+  state.employees.employees.filter(emp =>
+    emp.designation.includes('Project Manager')
+  );
+  const projectManagers = useSelector(selectProjectManagers);
   // const [projectStatuses, setProjectStatuses] = useState([
   //   { id: 1, statusName: 'Planning', statusColor: '#3b82f6' },
   //   { id: 2, statusName: 'In Progress', statusColor: '#f59e0b' },
@@ -250,7 +251,7 @@ const [newStatus, setNewStatus] = useState({
         {errors.projectCode && <p className="text-red-500 text-sm">{errors.projectCode}</p>}
         </div>
         <div>
-        <label className="block text-sm font-medium mb-1"> Company Name<span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mb-1"> Clients Name<span className="text-red-500">*</span></label>
         <select
           value={form.clientId}
           onChange={(e) => setForm({ ...form, clientId: e.target.value })}
@@ -277,7 +278,7 @@ const [newStatus, setNewStatus] = useState({
             >
               <option value="">Select Project Manager</option>
               {projectManagers.map(pm => (
-                <option key={pm.id} value={pm.id}>{pm.name}</option>
+                <option key={pm.employeeId} value={pm.employeeId}>{pm.employeeName}</option>
               ))}
             </select>
           </div>
@@ -477,7 +478,7 @@ const [newStatus, setNewStatus] = useState({
           type="number"
           placeholder="Payment Terms (days)"
           value={form.paymentTerms}
-          onChange={(e) => setForm({ ...form, paymentTerms: Number(e.target.value) || 30 })}
+          onChange={(e) => setForm({ ...form, paymentTerms: Number(e.target.value) || 0 })}
           className={`w-full px-3 py-2 border rounded ${
             errors.paymentTerms ? 'border-red-500' : 'border-gray-300'
           }`}
