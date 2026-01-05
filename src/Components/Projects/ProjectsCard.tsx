@@ -5,6 +5,7 @@ import type { AppDispatch, RootState } from '../../redux/store';
 import { fetchTeamMembersByProject } from '../../redux/teamMemberSlice';
 import { fetchMilestonesByProject } from '../../redux/milestoneSlice';
 import { Toaster } from 'react-hot-toast';
+import { fetchProjects } from '../../redux/projectSlice';
  
 interface ProjectCardProps {
   project: Project;
@@ -25,12 +26,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
  
   // ✅ Load data once when component mounts (optional - if not already loaded)
   useEffect(() => {
-    if (!project.projectId) return;
-   
-    // Only fetch if needed - this can be removed if parent already fetches
-    // dispatch(fetchTeamMembersByProject(project.projectId));
-    // dispatch(fetchMilestonesByProject(project.projectId));
-  }, [dispatch, project.projectId]);
+     dispatch(fetchProjects({ page: 2, pageSize: 20 }))
+  }, [dispatch]);
  
   // ✅ CRITICAL FIX: Filter team members for THIS project only
   const projectTeamCount = useMemo(() => {
@@ -89,7 +86,7 @@ useEffect(() => {
  
   return (
     <>
-      <Toaster position="top-right" />
+      <Toaster position="top-right" reverseOrder={false}  />
       <div className="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
         {/* Card Header */}
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-8 pt-8 pb-8 relative overflow-hidden">
@@ -102,9 +99,7 @@ useEffect(() => {
           {/* Header Content */}
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-5">
-              <div className="inline-block text-xs font-semibold text-white/60 tracking-[0.15em] px-3 py-1.5 border-[1.5px] border-white/20 rounded-md bg-white/5">
-                {project.projectCode}
-              </div>
+              
               <div>
                 <span
                   style={{ backgroundColor: project.statusColor }}

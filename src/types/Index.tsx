@@ -1,5 +1,6 @@
 export interface User {
   email: string;
+  password:string;
   role: 'Admin' | 'Client';
  
 }
@@ -22,7 +23,6 @@ export interface Client {
 export interface Project {
   projectId?: number;
   projectName: string;
- projectCode: string;
   projectManagerId: number;
   companyName:string;
   projectStatusId: number;

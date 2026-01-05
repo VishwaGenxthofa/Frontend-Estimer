@@ -32,7 +32,6 @@ const { statuses, loading } = useSelector(
   (state: RootState) => state.projectStatus);
 const [errors, setErrors] = useState<{
   projectName?: string;
-  projectCode?: string;
   clientId?: string;
   projectManagerId?: string;
   projectStatusId?: string;
@@ -44,7 +43,6 @@ const validateForm = () => {
   const newErrors: typeof errors = {};
 
   if (!form.projectName?.trim()) newErrors.projectName = 'Project Name is required';
-  if (!form.projectCode?.trim()) newErrors.projectCode = 'Project Code is required';
   if (!form.clientId) newErrors.clientId = 'Client is required';
   if (!form.projectManagerId) newErrors.projectManagerId = 'Project Manager is required';
   if (!form.projectStatusId) newErrors.projectStatusId = 'Project Status is required';
@@ -61,7 +59,6 @@ const validateForm = () => {
 
   const [form, setForm] = useState({
    projectName: '',
-   projectCode: '',
    clientId: '',
     projectManagerId: '',
     projectStatusId: '',
@@ -85,7 +82,6 @@ const handleSubmit = async () => {
 
   const payload: Project = {
     projectName: form.projectName,
-    projectCode: form.projectCode,
     clientId: Number(form.clientId),
     projectManagerId: Number(form.projectManagerId),
     projectStatusId: Number(form.projectStatusId),
@@ -107,7 +103,6 @@ const handleSubmit = async () => {
 
       setForm({
         projectName: "",
-        projectCode: "",
         clientId: "",
         projectManagerId: "",
         projectStatusId: "",
@@ -237,18 +232,6 @@ const [newStatus, setNewStatus] = useState({
           }`}
         />
         {errors.projectName && <p className="text-red-500 text-sm">{errors.projectName}</p>}
-        </div>
-        <div>
-        <label className="block text-sm font-medium mb-1">Project Code <span className="text-red-500">*</span></label>
-        <input
-          placeholder="Project Code"
-          value={form.projectCode}
-          onChange={(e) => setForm({ ...form, projectCode: e.target.value })}
-          className={`w-full px-3 py-2 border rounded ${
-            errors.projectCode ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {errors.projectCode && <p className="text-red-500 text-sm">{errors.projectCode}</p>}
         </div>
         <div>
         <label className="block text-sm font-medium mb-1"> Clients Name<span className="text-red-500">*</span></label>

@@ -1,6 +1,6 @@
 // redux/slices/projectSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../api/projectapi';
+import api from '../api/axios';
 import type { Project } from '../types/Index';
 
 interface ProjectState {
@@ -24,33 +24,28 @@ export const fetchProjects = createAsyncThunk<
   'project/fetchProjects',
   async ({ page = 1, pageSize = 10 }, { rejectWithValue }) => {
     try {
-      const response = await api.get(
-        `/projects`
-      );
+      const response = await api.get(`/Project?page=${page}&pageSize=${pageSize}`);
 
-      const projects = response.data;
+      const projects = response.data?.result?.data ?? [];
+      console.table(projects);
 
-      
       return projects.map((p: any): Project => ({
         projectId: p.projectId,
         projectName: p.projectName ?? '',
-        projectCode: p.projectCode ?? '',
         clientId: p.clientId,
         projectManagerId: p.projectManagerId,
         projectStatusId: p.projectStatusId,
-        companyName:p.companyName,
-        projectStatus:p.projectStatus,
+        companyName: p.companyName,
+        projectStatus: p.projectStatus,
         startDate: p.startDate,
         plannedEndDate: p.plannedEndDate,
         paymentTerms: p.paymentTerms ?? 0,
         finalBillingAmount: Number(p.finalBillingAmount) || 0,
-        statusColor:p.statusColor,
-        projectManager:p.projectManager,
+        statusColor: p.statusColor,
+        projectManager: p.projectManager,
       }));
     } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || 'Failed to fetch projects'
-      );
+      return rejectWithValue(err.response?.data?.message || 'Failed to fetch projects');
     }
   }
 );
@@ -60,7 +55,7 @@ export const createProject = createAsyncThunk(
   'project/create',
   async (payload: Project, { rejectWithValue }) => {
     try {
-      const res = await api.post('/project', payload);
+      const res = await api.post('/Project', payload);
         console.log("project details ",res.data)
       return res.data;
      
@@ -85,7 +80,8 @@ const projectSlice = createSlice({
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loading = false;
          console.log('API project DATA:', action.payload);
-        state.projects = (action.payload);
+         state.projects = action.payload.sort(
+    (a, b) => a.projectId - b.projectId)
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
