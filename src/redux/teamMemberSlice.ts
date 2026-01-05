@@ -29,10 +29,7 @@ export const fetchTeamMembers = createAsyncThunk<TeamMember[]>(
       if (res.data && res.data.success) {
         const data = res.data.data;
        
-        console.log('🔍 Checking data structure:');
-        console.log('  → Type:', typeof data);
-        console.log('  → Is Array?', Array.isArray(data));
-        console.log('  → Has nested "data"?', data && 'data' in data);
+       
        
         // Case 1: Paginated response { data: { data: [...] } }
         if (data && typeof data === 'object' && 'data' in data && Array.isArray(data.data)) {
@@ -81,22 +78,11 @@ export const fetchTeamMembersByProject = createAsyncThunk<
       // Try this endpoint instead
       const res = await api.get(`/ProjectTeam?projectId=${projectId}`);
      
-      console.log('='.repeat(70));
-      console.log('📦 RAW API RESPONSE:');
-      console.log('='.repeat(70));
-      console.log('Full response:', res);
-      console.log('Response data:', res.data);
-      console.log('Response data.data:', res.data?.data);
-      console.log('Response status:', res.status);
-      console.log('Response success:', res.data?.success);
+    
      
       // ✅ CRITICAL DEBUG: Log exact structure
       if (res.data?.data) {
-        console.log('🔍 Detailed data.data inspection:');
-        console.log('  Type:', typeof res.data.data);
-        console.log('  Is Array?', Array.isArray(res.data.data));
-        console.log('  Has "data" property?', res.data.data && 'data' in res.data.data);
-        console.log('  Content:', JSON.stringify(res.data.data, null, 2));
+       
       }
       console.log('='.repeat(70));
      
@@ -106,11 +92,7 @@ export const fetchTeamMembersByProject = createAsyncThunk<
       if (res.data && res.data.success) {
         const data = res.data.data;
        
-        console.log('🔍 API data structure check:');
-        console.log('  → data type:', typeof data);
-        console.log('  → data is array?', Array.isArray(data));
-        console.log('  → data has "data" property?', data && 'data' in data);
-        console.log('  → data content:', data);
+     
        
         // Case 1: Paginated response with nested data array
         // { data: { pageNumber: 1, data: [...] } }
@@ -159,7 +141,7 @@ export const fetchTeamMembersByProject = createAsyncThunk<
       })));
       console.log('='.repeat(70));
      
-      return { members: teamMembers, projectId };
+      return { members: teamMembers, projectId }; 
     } catch (err: any) {
       console.error(`❌ Error fetching team members for project ${projectId}:`, err);
       console.error('Error response:', err.response?.data);

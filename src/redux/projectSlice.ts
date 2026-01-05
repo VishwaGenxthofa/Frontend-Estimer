@@ -30,7 +30,7 @@ export const fetchProjects = createAsyncThunk<
 
       const projects = response.data;
 
-      console.table("project vsihwa",projects)
+      
       return projects.map((p: any): Project => ({
         projectId: p.projectId,
         projectName: p.projectName ?? '',
@@ -61,7 +61,9 @@ export const createProject = createAsyncThunk(
   async (payload: Project, { rejectWithValue }) => {
     try {
       const res = await api.post('/project', payload);
+        console.log("project details ",res.data)
       return res.data;
+     
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Create project failed');
     }

@@ -68,7 +68,7 @@ const EstimatesTab: React.FC<EstimatesTabProps> = ({
         ) : (
           estimates.map((est) => {
             const proj = projects.find(p => p.projectId === est.project_id);
-            const client = clients.find(c => c.clientId === parseInt(proj?.clientId || ''));
+            const client = clients.find(c => c.clientId === proj?.clientId );
 
             return (
               <div key={est.estimation_id} className="bg-white rounded-lg shadow p-6">

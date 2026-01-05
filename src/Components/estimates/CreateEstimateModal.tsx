@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
+import type { Project } from '../../types/Index';
 
 interface CreateEstimateModalProps {
   onClose: () => void;
   estimates: any[];
   setEstimates: React.Dispatch<React.SetStateAction<any[]>>;
-  projects: any[];
+  projects: Project[];
   clients: any[];
   teamMembers: any[];
   milestones: any[];

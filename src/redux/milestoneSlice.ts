@@ -242,9 +242,9 @@ export const updateMilestone = createAsyncThunk<Milestone, Milestone>(
   'milestone/update',
   async (data, { rejectWithValue }) => {
     try {
-      console.log('📤 Updating milestone:', data);
+    
       const res = await api.put(`/Milestone/${data.ProjectMilestoneId}`, data);
-      console.log('✅ Milestone updated:', res.data);
+    
      
       const updated = res.data.data || res.data;
       return { ...data, ...updated } as Milestone;
