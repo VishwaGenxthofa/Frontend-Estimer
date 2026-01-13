@@ -6,7 +6,7 @@ import Sidebar from './Components/common/Sidebar';
 import Dashboard from './Components/dashboard/Dashboard';
 import ClientsTab from './Components/clients/ClientsTab';
 import ProjectsTab from './Components/Projects/ProjectsTabs';
-import EstimatesTab from './Components/estimates/EstimatesTab';
+
 import InvoicesTab from './Components/invoices/InvoicesTab';
 import { Toaster } from 'react-hot-toast';
 import type {
@@ -21,6 +21,7 @@ import type {
 } from './types/Index';
 import useLocalStorage from './hooks/useLocalStorage';
 import LoginPage from './Components/Auth/LoginPage';
+import EstimationPage from './Components/estimates/EstimationPage';
 
 const App: React.FC = () => {
   const [user, setUser] = useLocalStorage<User | null>('user', null);
@@ -106,7 +107,7 @@ const App: React.FC = () => {
                     )}
 
                     {activeTab === 'estimates' && (
-                      <EstimatesTab
+                      <EstimationPage
                         estimates={estimates}
                         setEstimates={setEstimates}
                         projects={projects}

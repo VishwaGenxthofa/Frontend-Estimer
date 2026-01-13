@@ -79,9 +79,8 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loading = false;
-         console.log('API project DATA:', action.payload);
          state.projects = action.payload.sort(
-    (a, b) => a.projectId - b.projectId)
+    (a, b) => a.projectId - b.projectId);
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;

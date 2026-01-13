@@ -68,29 +68,36 @@ export interface Milestone {
   statusColor:string;
  
 }
- 
-export interface Estimate {
-  estimation_id: number;
-  project_id: number;
-  version: number;
-  status: string;
-  laborCosts: TeamMember[];
-  directCosts: any[];
-  indirectCosts: any[];
-  additionalCosts: any[];
-  profit: number;
-  tax: number;
-  laborCost: number;
-  dc: number;
-  ic: number;
-  ac: number;
-  sub: number;
-  profitAmt: number;
-  taxAmt: number;
-  final: number;
-  change_comment?: string;
+export interface CostType {
+  costTypeId: number;
+  costTypeName: string;
+  description: string;
+  isActive: boolean;
+  requiresQuantity: boolean;
+  requiresRate: boolean;
+  requiresMonths: boolean;
 }
- 
+
+export interface Estimate {
+  estimateId: number;
+  projectId: number;
+  projectName: string;
+  versionNumber: number;
+  estimationStatusId: number;
+  profitPercentage: number;
+  taxId: number;
+  taxPercentage: number;
+  clientRemarks: string;
+  totalLaborCost: number;
+  totalDirectCost: number;
+  totalIndirectCost: number;
+  totalAdditionalCost: number;
+  subTotal: number;
+  profitAmount: number;
+  taxAmount: number;
+  finalAmount: number;
+  createdAt: string;
+}
 export interface Invoice {
   invoice_id: number;
   invoice_number: string;

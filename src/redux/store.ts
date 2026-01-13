@@ -5,6 +5,9 @@ import projectReducer from './projectSlice';
 import teamMemberReducer from './teamMemberSlice';
 import milestoneReducer from './milestoneSlice';
 import employeesReducer from './employeesSlice';
+import estimateReducer from './estimateSlice';
+import estimationStatusReducer from "./estimationStatus"
+import estimationTaxconfigReducer from "./taxConfigs"
 export const store = configureStore({
   reducer: {
     clients: clientReducer,
@@ -13,6 +16,10 @@ export const store = configureStore({
      teamMember: teamMemberReducer,
        milestone: milestoneReducer,
        employees: employeesReducer,
+        estimate: estimateReducer,
+        estimatestatus: estimationStatusReducer,
+        estimatestaxconfig:estimationTaxconfigReducer,
+
   },
 });
 
