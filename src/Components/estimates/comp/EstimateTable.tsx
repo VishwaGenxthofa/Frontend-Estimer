@@ -11,6 +11,8 @@ import {
   fetchEstimates,
 } from "../../../redux/estimateSlice";
 import type { Estimate } from "../../../types/Index";
+import { fetchEstimationStatuses } from "../../../redux/estimationStatus";
+import { fetchTaxConfigs } from "../../../redux/taxConfigs";
 
 /**
  * Helper to safely format currency
@@ -22,12 +24,19 @@ const formatCurrency = (value?: number) => {
 const EstimateTable: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { estimates, statuses, taxConfigs } = useSelector(
+  const {estimates} = useSelector(
     (state: RootState) => state.estimate
   );
-
+  const {taxconfig} = useSelector(
+    (state: RootState) => state.estimatestaxconfig
+  );
+  const { statuses } = useSelector(
+    (state: RootState) => state.estimatestatus
+  );
   useEffect(() => {
     dispatch(fetchEstimates());
+    dispatch(fetchEstimationStatuses());
+    dispatch(fetchTaxConfigs())
   }, [dispatch]);
 
   const handleStatusChange = (estimateId: number, statusId: number) => {
@@ -44,10 +53,9 @@ const EstimateTable: React.FC = () => {
       dispatch(deleteEstimate(id));
     }
   };
-console.log("taxConfigs:", taxConfigs);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+    <div className=" rounded-xl shadow-sm border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-50 border-b">
@@ -90,13 +98,13 @@ console.log("taxConfigs:", taxConfigs);
                 (s) => s.estimationStatusId === est.estimationStatusId
               );
 
-              const tax = taxConfigs.find(
+              const tax = taxconfig.find(
                 (t) => t.taxConfigId === est.taxId
               );
-
+              
               return (
                 <tr
-                  key={est.estimateId}
+                  key={est.estimationId}
                   className="hover:bg-slate-50 transition"
                 >
                   {/* Project */}
@@ -114,34 +122,21 @@ console.log("taxConfigs:", taxConfigs);
 
                   {/* Status */}
                   <td className="px-6 py-4">
-                    <select
-                      value={est.estimationStatusId}
-                      onChange={(e) =>
-                        handleStatusChange(
-                          est.estimateId,
-                          Number(e.target.value)
-                        )
-                      }
-                      className="px-3 py-1 rounded-full text-sm font-medium text-white border-0 focus:outline-none"
-                      style={{
-                        backgroundColor: status?.statusColor || "#64748b",
-                      }}
-                    >
-                      {statuses.map((s) => (
-                        <option
-                          key={s.estimationStatusId}
-                          value={s.estimationStatusId}
-                        >
-                          {s.statusName}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
+                      <p
+                        className="px-3 py-1 rounded-full text-sm font-medium text-white inline-block"
+                        style={{
+                          backgroundColor: est?.statusColor || "#64748b",
+                        }}
+                      >
+                        {est?.statusName || "Unknown"}
+                      </p>
+                    </td>
+
 
                   {/* Tax */}
                   <td className="px-6 py-4">
                     <span className="text-sm text-slate-600">
-                      {tax?.taxName || "No Tax"} (
+                      {est?.taxName || "No Tax"} (
                       {Number(est.taxPercentage || 0)}%)
                     </span>
                   </td>
@@ -162,7 +157,7 @@ console.log("taxConfigs:", taxConfigs);
                       </button>
 
                       <button
-                        onClick={() => handleDelete(est.estimateId)}
+                        onClick={() => handleDelete(est.estimationId)}
                         className="p-2 hover:bg-red-50 rounded-lg transition"
                       >
                         <Trash2 className="w-5 h-5 text-red-600" />

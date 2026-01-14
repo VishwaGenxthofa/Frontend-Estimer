@@ -1,27 +1,41 @@
 // steps/BasicStep.tsx
-import React from 'react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../redux/store';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch,RootState } from '../../../redux/store';
+import { fetchProjects } from '../../../redux/projectSlice';
 interface Props {
   formData: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const BasicStep: React.FC<Props> = ({ formData, setFormData }) => {
-  const { taxConfigs } = useSelector((state: RootState) => state.estimate);
-
+  const dispatch=useDispatch<AppDispatch>()
+  const { taxconfig } = useSelector((state: RootState) => state.estimatestaxconfig);
+ const { projects } = useSelector((state: RootState) => state.project);
+ useEffect(()=>{
+    dispatch(fetchProjects({ page: 2, pageSize: 20 }))  
+ },[])
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-semibold mb-2">Project Name *</label>
-        <input
-          type="text"
-          value={formData.projectName}
-          onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter project name"
-        />
+  <label className="block text-sm font-semibold mb-2"> Project Name *</label>
+        <select
+          value={formData.projectId}
+          onChange={(e) =>
+            setFormData({ ...formData, projectId: Number(e.target.value) })
+          }
+          className="w-full px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="">Select Project</option>
+
+          {projects.map((project) => (
+            <option key={project.projectId} value={project.projectId}>
+              {project.projectName}
+            </option>
+          ))}
+        </select>
       </div>
+
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -52,7 +66,7 @@ const BasicStep: React.FC<Props> = ({ formData, setFormData }) => {
           onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
           className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
         >
-          {taxConfigs.filter((t: any) => t.isActive).map((tax: any) => (
+          {taxconfig.filter((t: any) => t.isActive).map((tax: any) => (
             <option key={tax.taxConfigId} value={tax.taxConfigId}>
               {tax.taxName} ({tax.taxRate}%)
             </option>

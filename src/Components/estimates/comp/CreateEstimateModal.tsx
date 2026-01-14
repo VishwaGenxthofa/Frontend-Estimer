@@ -171,7 +171,7 @@ onClose,
   return (
     <>
     
-    <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed  inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[95vh] flex flex-col">
         {/* Header */}
         <div className="p-6 border-b flex justify-between items-center">

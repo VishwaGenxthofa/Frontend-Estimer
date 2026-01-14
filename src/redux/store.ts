@@ -8,6 +8,7 @@ import employeesReducer from './employeesSlice';
 import estimateReducer from './estimateSlice';
 import estimationStatusReducer from "./estimationStatus"
 import estimationTaxconfigReducer from "./taxConfigs"
+import costTypeReducer from "./costTypeSlice"
 export const store = configureStore({
   reducer: {
     clients: clientReducer,
@@ -19,6 +20,7 @@ export const store = configureStore({
         estimate: estimateReducer,
         estimatestatus: estimationStatusReducer,
         estimatestaxconfig:estimationTaxconfigReducer,
+        costTypes: costTypeReducer,
 
   },
 });

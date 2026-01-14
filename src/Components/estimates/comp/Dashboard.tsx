@@ -1,20 +1,28 @@
 // components/Dashboard.tsx
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import type{ RootState,AppDispatch } from '../../../redux/store';
 import { toggleCreateModal } from '../../../redux/estimateSlice';
 import EstimateStats from './EstimateStats';
 import EstimateTable from './EstimateTable';
+import { fetchEstimationStatuses } from '../../../redux/estimationStatus';
 
 const Dashboard: React.FC = () => {
-  const dispatch = useDispatch();
-  const { estimates, statuses } = useSelector((state: RootState) => state.estimate);
+  const dispatch = useDispatch<AppDispatch>();
+  const { estimates} = useSelector((state: RootState) => state.estimate);
   const [filter, setFilter] = useState<'all' | number>('all');
 
   const filteredEstimates = filter === 'all'
     ? estimates
     : estimates.filter(e => e.estimationStatusId === filter);
+const { statuses } = useSelector(
+    (state: RootState) => state.estimatestatus
+  );
+  
+useEffect(() => {
+    dispatch(fetchEstimationStatuses());
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ">
@@ -38,7 +46,7 @@ const Dashboard: React.FC = () => {
         <EstimateStats />
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border">
+        <div className=" rounded-xl shadow-sm p-4 mb-6 border">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="text-slate-700 font-medium">Filter:</span>
             <button

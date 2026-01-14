@@ -1,8 +1,9 @@
 // steps/LaborStep.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch,RootState } from '../../../redux/store';
+import { fetchEmployees } from '../../../redux/employeesSlice';
 
 interface Props {
   laborCosts: any[];
@@ -11,8 +12,11 @@ interface Props {
 }
 
 const LaborStep: React.FC<Props> = ({ laborCosts, setLaborCosts, totals }) => {
-  const { employees } = useSelector((state: RootState) => state.estimate);
-
+  const dispatch=useDispatch<AppDispatch>();
+  const { employees } = useSelector((state: RootState) => state.employees);
+useEffect (()=>{
+   dispatch(fetchEmployees())
+},[dispatch])
   const handleEmployeeChange = (index: number, employeeId: string) => {
     const updated = [...laborCosts];
     updated[index].employeeId = employeeId;

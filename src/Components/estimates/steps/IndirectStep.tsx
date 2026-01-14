@@ -1,8 +1,9 @@
 // steps/IndirectStep.tsx
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../redux/store';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCostTypes } from "../../../redux/costTypeSlice";
+import type { RootState, AppDispatch } from "../../../redux/store";
 
 interface Props {
   indirectCosts: any[];
@@ -11,7 +12,14 @@ interface Props {
 }
 
 const IndirectStep: React.FC<Props> = ({ indirectCosts, setIndirectCosts, totals }) => {
-  const { costTypes } = useSelector((state: RootState) => state.estimate);
+  const dispatch = useDispatch<AppDispatch>();
+  const { costTypes, loading } = useSelector(
+    (state: RootState) => state.costTypes
+  );
+
+  useEffect(() => {
+    dispatch(fetchCostTypes());
+  }, [dispatch]);;
 
   const handleTypeChange = (index: number, costTypeId: string) => {
     const updated = [...indirectCosts];

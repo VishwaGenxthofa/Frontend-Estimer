@@ -122,10 +122,16 @@ const estimationSlice = createSlice({
         state.estimates = data.map((est: any) => ({
           estimateId: est.id,
           projectId: est.projectId,
+          projectName:est.projectName,
+          statusName:est.statusName,
+          statusColor:est.statusColor,
           versionNumber: est.versionNumber,
           estimationStatusId: est.statusId,
           profitPercentage: est.profitPercentage,
+          taxPercentage:est.taxPercentage,
           taxId: est.taxConfigId,
+          finalAmount:est.finalAmount,
+          taxName:est.taxName,
           clientRemarks: est.clientRemarks,
           // You can calculate totals here or on demand
         }));

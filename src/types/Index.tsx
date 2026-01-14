@@ -79,24 +79,26 @@ export interface CostType {
 }
 
 export interface Estimate {
-  estimateId: number;
+  estimationId: number;
   projectId: number;
   projectName: string;
-  versionNumber: number;
+ versionNumber: number;
   estimationStatusId: number;
-  profitPercentage: number;
-  taxId: number;
-  taxPercentage: number;
-  clientRemarks: string;
+  statusName: string;
+  statusColor: string;
   totalLaborCost: number;
   totalDirectCost: number;
   totalIndirectCost: number;
   totalAdditionalCost: number;
   subTotal: number;
+  profitPercentage: number;
   profitAmount: number;
+  taxId: number;
+  taxName: string;
+  taxPercentage: number;
   taxAmount: number;
   finalAmount: number;
-  createdAt: string;
+  clientRemarks: string;
 }
 export interface Invoice {
   invoice_id: number;

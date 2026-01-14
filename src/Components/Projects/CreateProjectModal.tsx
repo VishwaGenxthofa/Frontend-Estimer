@@ -12,6 +12,7 @@ import {
 } from '../../redux/projectStatusSlice';
 import { fetchEmployees } from '../../redux/employeesSlice';
 import { createProject} from '../../redux/projectSlice';
+import { fetchClients } from '../../redux/clientSlice';
 interface CreateProjectModalProps {
   onClose: () => void;
   projects: Project[];
@@ -23,13 +24,17 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   onClose,
    projects,
   setProjects,
-  clients,
+
 }) => {
   const [showAddStatus, setShowAddStatus] = useState(false);
    const dispatch = useDispatch<AppDispatch>();
   
 const { statuses, loading } = useSelector(
   (state: RootState) => state.projectStatus);
+   const { clients } = useSelector((state: RootState) => state.clients);
+   useEffect(()=>{
+      dispatch(fetchClients({ page: 2, pageSize: 20 }));
+   },[dispatch])
 const [errors, setErrors] = useState<{
   projectName?: string;
   clientId?: string;

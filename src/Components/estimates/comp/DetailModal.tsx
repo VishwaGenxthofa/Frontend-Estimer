@@ -24,8 +24,8 @@ const DetailModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
+      <div className=" rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 border-b p-6 flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold">{est.projectName}</h2>
             <p className="text-slate-600">Version {est.versionNumber}</p>
