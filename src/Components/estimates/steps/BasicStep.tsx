@@ -10,7 +10,7 @@ interface Props {
 
 const BasicStep: React.FC<Props> = ({ formData, setFormData }) => {
   const dispatch=useDispatch<AppDispatch>()
-  const { taxconfig } = useSelector((state: RootState) => state.estimatestaxconfig);
+  const  taxconfig  = useSelector((state: RootState) => state.estimatestaxconfig.taxConfigs);
  const { projects } = useSelector((state: RootState) => state.project);
  useEffect(()=>{
     dispatch(fetchProjects({ page: 2, pageSize: 20 }))  

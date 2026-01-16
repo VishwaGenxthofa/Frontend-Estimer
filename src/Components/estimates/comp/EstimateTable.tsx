@@ -27,7 +27,7 @@ const EstimateTable: React.FC = () => {
   const {estimates} = useSelector(
     (state: RootState) => state.estimate
   );
-  const {taxconfig} = useSelector(
+  const {taxConfigs} = useSelector(
     (state: RootState) => state.estimatestaxconfig
   );
   const { statuses } = useSelector(
@@ -55,7 +55,7 @@ const EstimateTable: React.FC = () => {
   };
 
   return (
-    <div className=" rounded-xl shadow-sm border overflow-hidden">
+    <div className=" rounded-xl shadow-sm border border-gray-300 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-50 border-b">
@@ -98,9 +98,9 @@ const EstimateTable: React.FC = () => {
                 (s) => s.estimationStatusId === est.estimationStatusId
               );
 
-              const tax = taxconfig.find(
-                (t) => t.taxConfigId === est.taxId
-              );
+              // const tax = taxconfig.find(
+              //   (t) => t.taxConfigId === est.taxId
+              // );
               
               return (
                 <tr

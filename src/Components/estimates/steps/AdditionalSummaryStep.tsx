@@ -1,9 +1,10 @@
 // steps/AdditionalSummaryStep.tsx
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCostTypes } from "../../../redux/costTypeSlice";
 import type { RootState, AppDispatch } from "../../../redux/store";
+
 interface Props {
   additionalCosts: any[];
   setAdditionalCosts: React.Dispatch<React.SetStateAction<any[]>>;
@@ -14,13 +15,14 @@ interface Props {
 const AdditionalSummaryStep: React.FC<Props> = ({ additionalCosts, setAdditionalCosts, formData, totals }) => {
   const { taxConfigs } = useSelector((state: RootState) => state.estimate);
   const selectedTax = taxConfigs.find((t: any) => t.taxConfigId === parseInt(formData.taxId));
- const dispatch = useDispatch<AppDispatch>();
-  const { costTypes } = useSelector(
-    (state: RootState) => state.costTypes
-  );
-   useEffect(() => {
-      dispatch(fetchCostTypes());
-    }, [dispatch]);
+  
+  const dispatch = useDispatch<AppDispatch>();
+  const { costTypes } = useSelector((state: RootState) => state.costTypes);
+
+  useEffect(() => {
+    dispatch(fetchCostTypes());
+  }, [dispatch]);
+
   const handleTypeChange = (index: number, costTypeId: string) => {
     const updated = [...additionalCosts];
     updated[index].costTypeId = costTypeId;
@@ -29,6 +31,11 @@ const AdditionalSummaryStep: React.FC<Props> = ({ additionalCosts, setAdditional
     setAdditionalCosts(updated);
   };
 
+  // Filter active additional cost types dynamically
+  const activeAdditionalTypes = costTypes.filter(
+    (ct: any) => ct.isActive && ['additional', 'additionalCosts'].includes(ct.category)
+  );
+
   return (
     <div className="space-y-6">
       {/* Additional Costs */}
@@ -36,7 +43,7 @@ const AdditionalSummaryStep: React.FC<Props> = ({ additionalCosts, setAdditional
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-bold text-xl">Additional Costs</h3>
           <button
-            onClick={() => setAdditionalCosts([...additionalCosts, { costTypeId: 7, costName: '', costAmount: '', notes: '' }])}
+            onClick={() => setAdditionalCosts([...additionalCosts, { costTypeId: '', costName: '', costAmount: '', notes: '' }])}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" /> Add
@@ -62,13 +69,12 @@ const AdditionalSummaryStep: React.FC<Props> = ({ additionalCosts, setAdditional
               onChange={(e) => handleTypeChange(i, e.target.value)}
               className="w-full px-3 py-2 border rounded-lg mb-3"
             >
-              {costTypes
-                .filter((ct: any) => ct.isActive && [7, 8, 9].includes(ct.costTypeId))
-                .map((ct: any) => (
-                  <option key={ct.costTypeId} value={ct.costTypeId}>
-                    {ct.costTypeName}
-                  </option>
-                ))}
+              <option value="">Select Additional Cost Type</option>
+              {activeAdditionalTypes.map((ct: any) => (
+                <option key={ct.costTypeId} value={ct.costTypeId}>
+                  {ct.costTypeName}
+                </option>
+              ))}
             </select>
 
             <input

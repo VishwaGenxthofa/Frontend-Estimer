@@ -1,5 +1,5 @@
 // steps/IndirectStep.tsx
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCostTypes } from "../../../redux/costTypeSlice";
@@ -13,13 +13,11 @@ interface Props {
 
 const IndirectStep: React.FC<Props> = ({ indirectCosts, setIndirectCosts, totals }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { costTypes, loading } = useSelector(
-    (state: RootState) => state.costTypes
-  );
+  const { costTypes } = useSelector((state: RootState) => state.costTypes);
 
   useEffect(() => {
     dispatch(fetchCostTypes());
-  }, [dispatch]);;
+  }, [dispatch]);
 
   const handleTypeChange = (index: number, costTypeId: string) => {
     const updated = [...indirectCosts];
@@ -29,12 +27,19 @@ const IndirectStep: React.FC<Props> = ({ indirectCosts, setIndirectCosts, totals
     setIndirectCosts(updated);
   };
 
+  // Filter active indirect cost types
+  const activeIndirectTypes = costTypes.filter(
+    (ct: any) => ct.isActive && ['indirect', 'indirectCosts'].includes(ct.category)
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-xl">Indirect Costs</h3>
         <button
-          onClick={() => setIndirectCosts([...indirectCosts, { costTypeId: 4, costName: '', costAmount: '', notes: '' }])}
+          onClick={() =>
+            setIndirectCosts([...indirectCosts, { costTypeId: '', costName: '', costAmount: '', notes: '' }])
+          }
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" /> Add
@@ -60,13 +65,12 @@ const IndirectStep: React.FC<Props> = ({ indirectCosts, setIndirectCosts, totals
             onChange={(e) => handleTypeChange(i, e.target.value)}
             className="w-full px-3 py-2 border rounded-lg mb-3"
           >
-            {costTypes
-              .filter((ct: any) => ct.isActive && [4, 5, 6].includes(ct.costTypeId))
-              .map((ct: any) => (
-                <option key={ct.costTypeId} value={ct.costTypeId}>
-                  {ct.costTypeName}
-                </option>
-              ))}
+            <option value="">Select Indirect Cost Type</option>
+            {activeIndirectTypes.map((ct: any) => (
+              <option key={ct.costTypeId} value={ct.costTypeId}>
+                {ct.costTypeName}
+              </option>
+            ))}
           </select>
 
           <input

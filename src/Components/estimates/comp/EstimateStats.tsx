@@ -7,17 +7,18 @@ import { fetchEstimates } from '../../../redux/estimateSlice';
 
 const EstimateStats: React.FC = () => {
   const dispatch=useDispatch<AppDispatch>()
-  const { estimates } = useSelector((state: RootState) => state.estimate);
+  const  estimates  = useSelector((state: RootState) => state.estimate.estimates);
+ const totalValue = estimates.reduce((sum, e) => sum + Number(e.finalAmount || 0), 0);
+const approvedCount = estimates.filter(e => e.statusName === "Approved").length;
+const pendingCount = estimates.filter( e => e.statusName === "Pending").length;
 
-  const totalValue = estimates.reduce((sum, e) => sum + e.finalAmount, 0);
-  const approvedCount = estimates.filter(e => e.estimationStatusId === 3).length;
-  const pendingCount = estimates.filter(e => e.estimationStatusId === 2).length;
+console.log("appr:",approvedCount,"pen",pendingCount)
  useEffect(() => {
     dispatch(fetchEstimates());
   }, [dispatch])
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div className=" rounded-xl shadow-sm p-6 border">
+      <div className=" rounded-xl shadow-sm p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-slate-600 text-sm font-medium">Total Estimates</p>
@@ -29,7 +30,7 @@ const EstimateStats: React.FC = () => {
         </div>
       </div>
 
-      <div className=" rounded-xl shadow-sm p-6 border">
+      <div className=" rounded-xl shadow-sm p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-slate-600 text-sm font-medium">Total Value</p>
@@ -41,7 +42,7 @@ const EstimateStats: React.FC = () => {
         </div>
       </div>
 
-      <div className=" rounded-xl shadow-sm p-6 border">
+      <div className=" rounded-xl shadow-sm p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-slate-600 text-sm font-medium">Approved</p>
@@ -53,7 +54,7 @@ const EstimateStats: React.FC = () => {
         </div>
       </div>
 
-      <div className=" rounded-xl shadow-sm p-6 border">
+      <div className=" rounded-xl shadow-sm p-6 bg-gradient-to-br from-slate-50 to-slate-100 ">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-slate-600 text-sm font-medium">Pending</p>
