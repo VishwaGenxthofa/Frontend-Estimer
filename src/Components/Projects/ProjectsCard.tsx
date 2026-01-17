@@ -6,7 +6,14 @@ import { fetchTeamMembersByProject } from '../../redux/teamMemberSlice';
 import { fetchMilestonesByProject } from '../../redux/milestoneSlice';
 import { Toaster } from 'react-hot-toast';
 import { fetchProjects } from '../../redux/projectSlice';
- 
+import { BorderBeam } from '../ui/border-beam';
+
+ import {
+  CheckCircle,
+  CalendarDays,
+  CreditCard,
+  Check
+} from "lucide-react";
 interface ProjectCardProps {
   project: Project;
   client: Client | undefined;
@@ -87,19 +94,25 @@ useEffect(() => {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false}  />
+      
       <div className="w-full max-w-md bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
         {/* Card Header */}
+        
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-8 pt-8 pb-8 relative overflow-hidden">
           {/* Decorative Circle */}
-          <div className="absolute -top-1/2 -right-[10%] w-72 h-72 bg-white/5 rounded-full"></div>
          
+          <div className="absolute -top-1/2 -right-[10%] w-72 h-72 bg-white/5 rounded-full"></div>
+           
           {/* Bottom Border Line */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to from-transparent via-white/20 to-transparent"></div>
-         
+        
           {/* Header Content */}
           <div className="relative z-10">
+            
             <div className="flex justify-between items-start mb-5">
-              
+              <h2 className="text-[24px] font-bold text-white tracking-tight leading-none">
+              {project.projectName}
+            </h2>
               <div>
                 <span
                   style={{ backgroundColor: project.statusColor }}
@@ -108,22 +121,22 @@ useEffect(() => {
                   {project.projectStatus}
                 </span>
               </div>
-            </div>
-            <h1 className="text-[42px] font-bold text-white tracking-tight leading-none">
-              {project.projectName}
-            </h1>
+             </div>
           </div>
         </div>
  
         {/* Card Body */}
-        <div className="px-8 py-8 -mt-12 relative z-20">
+        <div className="px-4 py-4 -mt-12 relative z-20">
+          
           {/* Timeline Container */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-            <div className="text-[11px] font-bold text-slate-500 tracking-widest uppercase mb-4">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+            
+            <div className="text-[11px] font-bold text-slate-500 tracking-widest uppercase mb-3">
               Project Timeline
             </div>
             <div className="flex justify-between items-center gap-4">
               <div className="flex-1">
+                
                 <div className="text-[10px] text-slate-400 tracking-wide uppercase font-semibold mb-1.5">
                   Start Date
                 </div>
@@ -149,18 +162,21 @@ useEffect(() => {
           </div>
          
           {/* Info Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-7">
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            
             <div className="bg-white border-[1.5px] border-slate-200 rounded-lg p-4 transition-all duration-300 hover:border-slate-300 hover:translate-x-1 relative overflow-hidden group">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to from-blue-900 to-slate-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <BorderBeam duration={8} size={100} />
+              <div className=" absolute top-0 left-0 w-1 h-full bg-gradient-to from-blue-900 to-slate-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="text-[10px] text-slate-500 tracking-wide uppercase font-bold mb-2">
                 Payment Terms
-              </div>
+              </div> 
               <div className="text-[17px] font-bold text-slate-900">
-                {project.paymentTerms} Days
-              </div>
+                  {project.paymentTerms} Days
+              </div> 
             </div>
  
             <div className="bg-white border-[1.5px] border-slate-200 rounded-lg p-4 transition-all duration-300 hover:border-slate-300 hover:translate-x-1 relative overflow-hidden group">
+             <BorderBeam duration={8} reverse size={100} />
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to from-blue-900 to-slate-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="text-[10px] text-slate-500 tracking-wide uppercase font-bold mb-2">
                 Project Manager
@@ -201,6 +217,7 @@ useEffect(() => {
             <div className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-150 transition-transform duration-500 origin-center"></div>
             <span className="relative z-10">Manage Project</span>
           </button> */}
+          
         </div>
       </div>
     </>

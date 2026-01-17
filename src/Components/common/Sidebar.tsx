@@ -1,6 +1,7 @@
 // src/components/common/Sidebar.tsx
 import React from 'react';
 import { BarChart3, Users, Briefcase, FileText, DollarSign } from 'lucide-react';
+import { AuroraText } from '../ui/aurora-text';
 
 interface SidebarProps {
   activeTab: string;
@@ -45,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isAdmin }) =
         >
           <Icon className="w-6 h-6" />
           <span className="hidden md:inline font-medium">
-            {tab.label}
+            {tab.label} 
           </span>
         </button>
       );

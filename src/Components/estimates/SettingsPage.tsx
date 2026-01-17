@@ -9,6 +9,7 @@ import CostTypeModal from '../../Components/estimates/comp/costTypes/CostTypeMod
 import TaxConfigTable from '../../Components/estimates/comp/taxConfigs/TaxConfigTable';
 import TaxConfigModal from '../../Components/estimates/comp/taxConfigs/TaxConfigModal';
 import { X } from 'lucide-react';
+import { CoolMode } from '../ui/cool-mode';
 
 const SettingsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,12 +26,13 @@ const SettingsPage = () => {
         {/* Header */}
         <div className="mb-10 flex items-center justify-between">
           <div className="flex items-center gap-5">
+            <CoolMode>
             <button
               onClick={() => dispatch(setView('dashboard'))}
               className="p-3 hover:bg-white rounded-xl shadow-sm transition"
             >
               <X className="w-6 h-6 text-slate-600" />
-            </button>
+            </button> </CoolMode>
             <div>
               <h1 className="text-4xl font-bold text-slate-800">Settings</h1>
               <p className="text-slate-600 mt-2">Manage cost types and tax configurations</p>
@@ -40,6 +42,7 @@ const SettingsPage = () => {
 
         {/* Tabs */}
         <div className="flex gap-4 mb-10 border-b border-slate-200">
+          <CoolMode>
           <button
             onClick={() => dispatch(setSettingsTab('costTypes'))}
             className={`px-8 py-4 font-semibold text-lg border-b-4 transition ${
@@ -49,7 +52,8 @@ const SettingsPage = () => {
             }`}
           >
             Cost Types
-          </button>
+          </button></CoolMode>
+          <CoolMode>
           <button
             onClick={() => dispatch(setSettingsTab('taxConfigs'))}
             className={`px-8 py-4 font-semibold text-lg border-b-4 transition ${
@@ -59,7 +63,7 @@ const SettingsPage = () => {
             }`}
           >
             Tax Configurations
-          </button>
+          </button></CoolMode>
         </div>
 
         {/* Content */}

@@ -22,6 +22,7 @@ import type {
 import useLocalStorage from './hooks/useLocalStorage';
 import LoginPage from './Components/Auth/LoginPage';
 import EstimationPage from './Components/estimates/EstimationPage';
+import ForgotPasswordPage from './Components/Auth/ForgotPasswordPage';
 
 const App: React.FC = () => {
   const [user, setUser] = useLocalStorage<User | null>('user', null);
@@ -140,6 +141,8 @@ const App: React.FC = () => {
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path='/forgot' element={<ForgotPasswordPage></ForgotPasswordPage>}></Route>
+        <Route path='/loginpage' element={<LoginPage></LoginPage>}></Route>
       </Routes>
     </>
   );

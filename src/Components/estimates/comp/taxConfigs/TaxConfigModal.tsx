@@ -1,183 +1,184 @@
 // src/features/taxConfigs/components/TaxConfigModal.tsx
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import type { RootState, AppDispatch } from '../../../../redux/store';
-import { addTaxConfig, updateTaxConfig } from '../../../../redux/taxConfigs'; // ← Correct slice import
-import { toggleTaxModal, setSelectedTax } from '../../../../redux/uiSlice';
-import toast from 'react-hot-toast';
-import { X } from 'lucide-react';
+import { useEffect } from "react";
+import { Modal, Form, Input, InputNumber, Switch, Button, Card } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../../../../redux/store";
+import { addTaxConfig, updateTaxConfig } from "../../../../redux/taxConfigs";
+import { toggleTaxModal, setSelectedTax } from "../../../../redux/uiSlice";
+import toast from "react-hot-toast";
 
 const TaxConfigModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { showTaxModal, selectedTax } = useSelector((state: RootState) => state.ui);
-  const { loading } = useSelector((state: RootState) => state.estimatestaxconfig); // ← Fixed selector
+  const [form] = Form.useForm();
 
-  const [formData, setFormData] = useState({
-    taxName: '',
-    taxRate: '',
-    isActive: true,
-  });
+  const { showTaxModal, selectedTax } = useSelector(
+    (state: RootState) => state.ui
+  );
+  const { loading } = useSelector(
+    (state: RootState) => state.estimatestaxconfig
+  );
 
   useEffect(() => {
     if (selectedTax) {
-      setFormData({
-        taxName: selectedTax.taxName || '',
-        taxRate: selectedTax.taxRate?.toString() || '',
-        isActive: selectedTax.isActive ?? true,
+      form.setFieldsValue({
+        taxName: selectedTax.taxName,
+        taxRate: selectedTax.taxRate,
+        isActive: selectedTax.isActive,
       });
     } else {
-      setFormData({
-        taxName: '',
-        taxRate: '',
-        isActive: true,
-      });
+      form.resetFields();
     }
   }, [selectedTax, showTaxModal]);
-
-  if (!showTaxModal) return null;
-
-  const handleSubmit = async () => {
-    // Validation
-    if (!formData.taxName.trim()) {
-      toast.error('Tax Name is required!');
-      return;
-    }
-
-    const rate = parseFloat(formData.taxRate);
-    if (isNaN(rate) || rate < 0 || rate > 100) {
-      toast.error('Please enter a valid tax rate (0-100%)');
-      return;
-    }
-
-    const payload = {
-      taxName: formData.taxName.trim(),
-      taxRate: rate,
-      isActive: formData.isActive,
-    };
-
-    const action = selectedTax
-      ? updateTaxConfig({ ...payload, taxConfigId: selectedTax.taxConfigId })
-      : addTaxConfig(payload); // ← No manual ID — backend generates it
-
-    const toastId = toast.loading(selectedTax ? 'Updating tax configuration...' : 'Creating tax configuration...');
-
-    try {
-      await dispatch(action).unwrap();
-      toast.success(selectedTax ? 'Tax configuration updated successfully!' : 'Tax configuration created successfully!');
-      closeModal();
-    } catch (err: any) {
-      toast.error(err || 'Failed to save tax configuration');
-    } finally {
-      toast.dismiss(toastId);
-    }
-  };
 
   const closeModal = () => {
     dispatch(toggleTaxModal(false));
     dispatch(setSelectedTax(null));
+    form.resetFields();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+
+      const payload = {
+        taxName: values.taxName.trim(),
+        taxRate: values.taxRate,
+        isActive: values.isActive,
+      };
+
+      const action = selectedTax
+        ? updateTaxConfig({
+            ...payload,
+            taxConfigId: selectedTax.taxConfigId,
+          })
+        : addTaxConfig(payload);
+
+      const toastId = toast.loading(
+        selectedTax ? "Updating tax configuration..." : "Creating tax configuration..."
+      );
+
+      await dispatch(action).unwrap();
+
+      toast.success(
+        selectedTax
+          ? "Tax configuration updated successfully!"
+          : "Tax configuration created successfully!"
+      );
+
+      toast.dismiss(toastId);
+      closeModal();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save tax configuration");
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-800">
-              {selectedTax ? 'Edit Tax Configuration' : 'Add New Tax Configuration'}
-            </h2>
-            <p className="text-slate-600 mt-1">Define tax rates applied to estimates</p>
-          </div>
-          <button onClick={closeModal} className="p-3 hover:bg-slate-100 rounded-xl transition">
-            <X className="w-6 h-6 text-slate-600" />
-          </button>
+    <Modal
+      open={showTaxModal}
+      onCancel={closeModal}
+      footer={null}
+      width={560}
+      destroyOnClose
+      centered
+      title={
+        <div>
+          <h2 className="text-xl font-bold">
+            {selectedTax ? "Edit Tax Configuration" : "Add New Tax Configuration"}
+          </h2>
+          <p className="text-slate-500 text-sm">
+            Define tax rates applied to estimates
+          </p>
         </div>
+      }
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ isActive: true }}
+      >
+        {/* Tax Name */}
+        <Form.Item
+          label="Tax Name"
+          name="taxName"
+          rules={[{ required: true, message: "Tax Name is required" }]}
+        >
+          <Input placeholder="e.g., GST, VAT, Sales Tax" />
+        </Form.Item>
 
-        {/* Form Body */}
-        <div className="p-8 space-y-6">
-          {/* Tax Name */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Tax Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.taxName}
-              onChange={(e) => setFormData({ ...formData, taxName: e.target.value })}
-              className="w-full px-5 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition"
-              placeholder="e.g., GST, VAT, Sales Tax"
-            />
-          </div>
+        {/* Tax Rate */}
+        <Form.Item
+          label="Tax Rate (%)"
+          name="taxRate"
+          rules={[
+            { required: true, message: "Tax rate is required" },
+            {
+              type: "number",
+              min: 0,
+              max: 100,
+              message: "Rate must be between 0 and 100",
+            },
+          ]}
+        >
+          <InputNumber
+            min={0}
+            max={100}
+            step={0.01}
+            className="w-full"
+            style={{width:"100%"}}
+            placeholder="18.00"
+          />
+        </Form.Item>
 
-          {/* Tax Rate */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Tax Rate (%) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
-              value={formData.taxRate}
-              onChange={(e) => setFormData({ ...formData, taxRate: e.target.value })}
-              className="w-full px-5 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition"
-              placeholder="18.00"
-            />
-            <p className="text-xs text-slate-500 mt-2">Enter rate between 0 and 100%</p>
-          </div>
+        {/* Active */}
+        <Form.Item
+          name="isActive"
+          valuePropName="checked"
+          className="mb-2"
+        >
+          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+        </Form.Item>
 
-          {/* Active Toggle */}
-          <div className="flex items-center gap-4">
-            <input
-              type="checkbox"
-              checked={formData.isActive}
-              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="w-6 h-6 text-green-600 rounded focus:ring-green-500"
-            />
-            <span className="font-semibold text-slate-800">Active (Available for selection in estimates)</span>
-          </div>
+        {/* Live Preview */}
+        <Form.Item shouldUpdate>
+          {() => {
+            const rate = form.getFieldValue("taxRate") || 0;
+            const name = form.getFieldValue("taxName") || "Tax Name";
 
-          {/* Live Preview */}
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
-            <h3 className="font-bold text-blue-900 mb-4 text-lg">Live Preview</h3>
-            <div className="space-y-3">
-              <p className="text-sm text-blue-800">
-                This tax will appear as:
-                <span className="font-bold ml-2">
-                  {formData.taxName || 'Tax Name'} ({formData.taxRate || '0.00'}%)
-                </span>
-              </p>
-              {formData.taxRate && !isNaN(parseFloat(formData.taxRate)) && parseFloat(formData.taxRate) > 0 && (
-                <p className="text-sm text-blue-800">
-                  Example on ₹100,000 subtotal:
-                  <span className="font-bold ml-2">
-                    Tax = ₹{(100000 * (parseFloat(formData.taxRate) / 100)).toLocaleString('en-IN')}
-                  </span>
+            return (
+              <Card
+                size="small"
+                title="Live Preview"
+                className="bg-blue-50 border-blue-200"
+              >
+                <p className="text-sm">
+                  {name} ({rate}%)
                 </p>
-              )}
-            </div>
-          </div>
-        </div>
+                {rate > 0 && (
+                  <p className="text-sm mt-1">
+                    Example on ₹100,000:{" "}
+                    <strong>
+                      ₹{(100000 * (rate / 100)).toLocaleString("en-IN")}
+                    </strong>
+                  </p>
+                )}
+              </Card>
+            );
+          }}
+        </Form.Item>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-200 flex justify-end gap-4 bg-slate-50 rounded-b-2xl">
-          <button
-            onClick={closeModal}
-            className="px-8 py-3 border border-slate-300 rounded-xl font-medium hover:bg-slate-100 transition"
-          >
-            Cancel
-          </button>
-          <button
+        <div className="flex justify-end gap-3 mt-6">
+          <Button onClick={closeModal}>Cancel</Button>
+          <Button
+            type="primary"
+            loading={loading}
             onClick={handleSubmit}
-            disabled={loading}
-            className="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg transition transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? 'Saving...' : selectedTax ? 'Update' : 'Create'} Tax Config
-          </button>
+            {selectedTax ? "Update" : "Create"} Tax Config
+          </Button>
         </div>
-      </div>
-    </div>
+      </Form>
+    </Modal>
   );
 };
 

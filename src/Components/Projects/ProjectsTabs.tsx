@@ -9,6 +9,9 @@ import type { Project, Client, TeamMember, Milestone } from '../../types/Index';
 import { useDispatch, useSelector } from 'react-redux';
 import type{ AppDispatch ,RootState} from '../../redux/store';
 import { fetchProjects } from '../../redux/projectSlice';
+import { CoolMode } from '../ui/cool-mode';
+import { AuroraText } from '../ui/aurora-text';
+
 
 interface ProjectsTabProps {
   projects: Project[];
@@ -42,15 +45,16 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
   return (
     <div className='p-4 overflow-y-auto max-h-screen"'>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Projects</h2>
+        <h2 className="text-3xl font-bold"> <AuroraText> Projects </AuroraText>   </h2>
         {isAdmin && (
+          <CoolMode>
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-5 h-5" />
             <span>Create Project</span>
-          </button>
+          </button></CoolMode>
         )}
       </div>
 
@@ -68,7 +72,9 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
               teamCount={teamCount}
               milestoneCount={milestoneCount}
               onManage={() => setViewProject(proj)}
-            />
+            >
+              
+              </ProjectCard>
           );
         })}
       </div>

@@ -1,5 +1,6 @@
 import { useState} from 'react';
 import {  Key, } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 
 // Page 2: Forgot Password
@@ -70,12 +71,13 @@ function ForgotPasswordPage({ onBackToLogin }:any) {
         </button>
 
         {/* Back to Login */}
+        <Link to="/loginpage">
         <button
           onClick={onBackToLogin}
           className="w-full text-center text-gray-600 hover:text-gray-900 font-medium flex items-center justify-center gap-2"
         >
           ← Back to log in
-        </button>
+        </button></Link>
       </div>
     </div>
   );

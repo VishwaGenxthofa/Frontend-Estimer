@@ -230,7 +230,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           </button>
 
           {/* Google Sign In Button */}
-          <button
+          {/* <button
             type="button"
             disabled={isLoading}
             className="w-full py-3 px-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -242,7 +242,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
               <path d="M10.2002 3.95805C11.6246 3.93601 13.0008 4.47262 14.036 5.45722L16.8933 2.60046C15.1801 0.990847 12.9263 0.116943 10.2002 0.143885C6.3114 0.143885 2.76929 2.45979 1.16797 5.50854L4.48486 8.08431C5.27874 5.71385 7.53835 3.95805 10.2002 3.95805Z" fill="#EA4335"/>
             </svg>
             Sign in with Google
-          </button>
+          </button> */}
         </form>
 
         {/* Demo Accounts */}

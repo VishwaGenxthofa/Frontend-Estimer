@@ -464,9 +464,9 @@ const [newStatus, setNewStatus] = useState({
         <label className="block text-sm font-medium mb-1">Payment Terms <span className="text-red-500">*</span></label>
         <input
           type="number"
-          placeholder="Payment Terms (days)"
+          placeholder="0"
           value={form.paymentTerms}
-          onChange={(e) => setForm({ ...form, paymentTerms: Number(e.target.value) || 0 })}
+          onChange={(e) => setForm({ ...form, paymentTerms: Number(e.target.value) })}
           className={`w-full px-3 py-2 border rounded ${
             errors.paymentTerms ? 'border-red-500' : 'border-gray-300'
           }`}

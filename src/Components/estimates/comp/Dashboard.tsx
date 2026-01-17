@@ -8,6 +8,7 @@ import { setView } from '../../../redux/uiSlice'; // Import setView to switch to
 import EstimateStats from './EstimateStats';
 import EstimateTable from './EstimateTable';
 import { fetchEstimationStatuses } from '../../../redux/estimationStatus';
+import { AuroraText } from '../../ui/aurora-text';
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,7 +36,7 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-bold text-slate-800">Estimation Management</h2>
+            <h2 className="text-3xl font-bold text-slate-800"><AuroraText> Estimation </AuroraText> Management</h2>
             <p className="text-base text-slate-600 mt-3">Manage project estimates with cost types and tax configurations</p>
           </div>
 
@@ -63,44 +64,6 @@ const Dashboard: React.FC = () => {
 
         {/* Stats */}
         <EstimateStats />
-
-        {/* Filters */}
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-sm border border-slate-100 p-6 mb-10">
-          <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
-            <span className="text-slate-700 font-semibold text-lg">Filter by Status:</span>
-            <div className="flex gap-3 flex-wrap">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-6 py-3 rounded-xl font-medium transition ${
-                  filter === 'all'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                All
-              </button>
-              {statusesLoading ? (
-                <span className="text-slate-500 italic">Loading...</span>
-              ) : (
-                statuses.map((status: any) => (
-                  <button
-                    key={status.estimationStatusId}
-                    onClick={() => setFilter(status.estimationStatusId)}
-                    className="px-6 py-3 rounded-xl font-medium text-white shadow-sm transition transform hover:scale-105"
-                    style={{
-                      backgroundColor: filter === status.estimationStatusId 
-                        ? status.statusColor 
-                        : '#94a3b8',
-                    }}
-                  >
-                    {status.statusName}
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Table */}
         <EstimateTable estimates={filteredEstimates} />
       </div>

@@ -25,6 +25,8 @@ import {
 
 import toast, { Toaster } from 'react-hot-toast';
 import type { Client } from '../../types/Index';
+import { CoolMode } from '../ui/cool-mode';
+import { AuroraText } from '../ui/aurora-text';
 const ClientsTab: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { clients, loading } = useSelector((state: RootState) => state.clients);
@@ -191,8 +193,8 @@ const ClientsTab: React.FC = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Clients</h2>
-
+        <h2 className="text-3xl font-bold text-gray-800"><AuroraText>  Clients </AuroraText>  </h2>
+         <CoolMode>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -202,7 +204,7 @@ const ClientsTab: React.FC = () => {
           }}
         >
           Add Client
-        </Button>
+        </Button></CoolMode>
       </div>
 
       {/* Table */}
