@@ -116,6 +116,7 @@ const EstimateTable: React.FC = () => {
       dataSource={estimates}
       columns={columns}
       pagination={{ pageSize: 10 }}
+      scroll={{x:700}}
     />
   );
 };

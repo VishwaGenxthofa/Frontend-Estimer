@@ -31,8 +31,8 @@ const TaxConfigTable = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "taxConfigId",
-      key: "taxConfigId",
+      dataIndex: "id",
+      key: "id",
       render: (id: number) => <span className="font-mono text-slate-600">{id}</span>,
     },
     {
