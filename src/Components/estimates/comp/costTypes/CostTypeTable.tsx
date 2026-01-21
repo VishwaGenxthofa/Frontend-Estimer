@@ -46,8 +46,8 @@ const CostTypeTable = () => {
   const columns = [
     {
       title: "ID",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "costTypeId",
+      key: "costTypeId",
     },
     {
       title: "Name",

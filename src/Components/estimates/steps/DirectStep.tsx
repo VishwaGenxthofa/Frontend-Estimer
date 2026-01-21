@@ -96,7 +96,7 @@ const DirectStep: React.FC<Props> = ({ directCosts, setDirectCosts, totals }) =>
             >
               <option value="">Select Direct Cost Type</option>
               {costTypes
-                .filter(ct => ct.isActive && (ct.category === 'direct' || ct.category === 'directCosts'))
+                .filter(ct => ct.isActive && (ct.category === 'directCosts'))
                 .map(ct => (
                   <option key={ct.costTypeId} value={ct.costTypeId}>
                     {ct.costTypeName}

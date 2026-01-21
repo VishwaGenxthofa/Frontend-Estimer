@@ -19,11 +19,19 @@ const BasicStep: React.FC<Props> = ({ formData, setFormData }) => {
     <div className="space-y-4">
       <div>
   <label className="block text-sm font-semibold mb-2"> Project Name *</label>
-        <select
-          value={formData.projectId}
-          onChange={(e) =>
-            setFormData({ ...formData, projectId: Number(e.target.value) })
-          }
+                <select
+          value={formData.projectId || ''}
+          onChange={(e) => {
+            const selectedProject = projects.find(
+              (p) => p.projectId === Number(e.target.value)
+            );
+
+            setFormData({
+              ...formData,
+              projectId: selectedProject?.projectId || null,
+              projectName: selectedProject?.projectName || '',
+            });
+          }}
           className="w-full px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">Select Project</option>
